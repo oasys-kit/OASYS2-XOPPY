@@ -1,4 +1,3 @@
-import sys
 import numpy
 
 from orangewidget import gui
@@ -17,7 +16,7 @@ from syned.widget.widget_decorator import WidgetDecorator
 import syned.beamline.beamline as synedb
 import syned.storage_ring.magnetic_structures.insertion_device as synedid
 
-from PyQt5.QtWidgets import QFileDialog, QInputDialog, QMessageBox
+from PyQt5.QtWidgets import QMessageBox
 
 try:
     from silx.gui.dialog.DataFileDialog import DataFileDialog
@@ -828,7 +827,7 @@ if True:
                 'e- velocity',
                 'Bz']
 
-
+    @Inputs.syned_data
     def receive_syned_data(self, data):
 
         if isinstance(data, synedb.Beamline):

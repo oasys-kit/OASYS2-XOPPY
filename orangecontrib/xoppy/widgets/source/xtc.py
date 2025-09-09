@@ -5,10 +5,12 @@ from PyQt5.QtWidgets import QApplication
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui, congruence
+from orangewidget.widget import Input
 
-from xoppylib.xoppy_util import locations
-from oasys.widgets.exchange import DataExchangeObject
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.widget.util import congruence
+from oasys2.canvas.util.oasys_util import add_parameter_to_module
 
 from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
 
@@ -47,7 +49,12 @@ class OWxtc(XoppyWidget):
     METHOD = Setting(1)
     NEKS = Setting(100)
 
-    inputs = WidgetDecorator.syned_input_data()
+    class Inputs:
+        __syned_input_data__ = WidgetDecorator.syned_input_data()
+
+        syned_data = Input(name=__syned_input_data__[0][0],
+                           type=__syned_input_data__[0][1],
+                           id=__syned_input_data__[0][0], default=True, auto_summary=False)
 
     def __init__(self):
         super().__init__(show_script_tab=True)
@@ -469,108 +476,7 @@ if True:
     def getLogPlot(self):
         return[(False, True), (False, False), (False, False), (False, False)]
 
-    # def xoppy_calc_xtc(self):
-    #
-    #     for file in ["tc.inp","tc.out"]:
-    #         try:
-    #             os.remove(os.path.join(locations.home_bin_run(),file))
-    #         except:
-    #             pass
-    #
-    #     with open("tc.inp", "wt") as f:
-    #         f.write("TS called from xoppy\n")
-    #         f.write("%10.3f %10.2f %10.6f %s\n"%(self.ENERGY,self.CURRENT,self.ENERGY_SPREAD,"Ring-Energy(GeV) Current(mA) Beam-Energy-Spread"))
-    #         f.write("%10.4f %10.4f %10.4f %10.4f %s\n"%(self.SIGX,self.SIGY,self.SIGX1,self.SIGY1,"Sx(mm) Sy(mm) Sx1(mrad) Sy1(mrad)"))
-    #         f.write("%10.3f %d %s\n"%(self.PERIOD,self.NP,"Period(cm) N"))
-    #         f.write("%10.1f %10.1f %d %s\n"%(self.EMIN,self.EMAX,self.N,"Emin Emax Ne"))
-    #         f.write("%d %d %d %s\n"%(self.HARMONIC_FROM,self.HARMONIC_TO,self.HARMONIC_STEP,"Hmin Hmax Hstep"))
-    #         f.write("%d %d %d %d %s\n"%(self.HELICAL,self.METHOD,1,self.NEKS,"Helical Method Print_K Neks"))
-    #         f.write("foreground\n")
-    #
-    #
-    #     if platform.system() == "Windows":
-    #         command = "\"" + os.path.join(locations.home_bin(),'tc.exe') + "\""
-    #     else:
-    #         command = "'" + os.path.join(locations.home_bin(), 'tc') + "'"
-    #
-    #
-    #     print("Running command '%s' in directory: %s "%(command, locations.home_bin_run()))
-    #     print("\n--------------------------------------------------------\n")
-    #     os.system(command)
-    #     print("Output file: %s"%("tc.out"))
-    #     print("\n--------------------------------------------------------\n")
-    #
-    #     #
-    #     # parse result files to exchange object
-    #     #
-    #
-    #
-    #     with open("tc.out","r") as f:
-    #         lines = f.readlines()
-    #
-    #     # print output file
-    #     # for line in lines:
-    #     #     print(line, end="")
-    #
-    #
-    #     # remove returns
-    #     lines = [line[:-1] for line in lines]
-    #     harmonics_data = []
-    #
-    #     # separate numerical data from text
-    #     floatlist = []
-    #     harmoniclist = []
-    #     txtlist = []
-    #     for line in lines:
-    #         try:
-    #             tmp = line.strip()
-    #
-    #             if tmp.startswith("Harmonic"):
-    #                 harmonic_number = int(tmp.split("Harmonic")[1].strip())
-    #
-    #                 if harmonic_number != self.HARMONIC_FROM:
-    #                     harmonics_data[-1][1] = harmoniclist
-    #                     harmoniclist = []
-    #
-    #                 harmonics_data.append([harmonic_number, None])
-    #
-    #             tmp = float(line.strip()[0])
-    #
-    #             floatlist.append(line)
-    #             harmoniclist.append(line)
-    #         except:
-    #             txtlist.append(line)
-    #
-    #     harmonics_data[-1][1] = harmoniclist
-    #
-    #     data = numpy.loadtxt(floatlist)
-    #
-    #     for index in range(0, len(harmonics_data)):
-    #         # print (harmonics_data[index][0], harmonics_data[index][1])
-    #         harmonics_data[index][1] = numpy.loadtxt(harmonics_data[index][1])
-    #
-    #     #send exchange
-    #     calculated_data = DataExchangeObject("XOPPY", self.get_data_exchange_widget_name())
-    #
-    #     try:
-    #         calculated_data.add_content("xoppy_data", data)
-    #         calculated_data.add_content("xoppy_data_harmonics", harmonics_data)
-    #         calculated_data.add_content("plot_x_col", 1)
-    #         calculated_data.add_content("plot_y_col", 2)
-    #     except:
-    #         pass
-    #     try:
-    #         calculated_data.add_content("labels",["Energy (eV) without emittance", "Energy (eV) with emittance",
-    #                                   "Brilliance (ph/s/mrad^2/mm^2/0.1%bw)","Ky","Total Power (W)","Power density (W/mr^2)"])
-    #     except:
-    #         pass
-    #     try:
-    #         calculated_data.add_content("info",txtlist)
-    #     except:
-    #         pass
-    #
-    #     return calculated_data
-
+    @Inputs.syned_data
     def receive_syned_data(self, data):
 
         if isinstance(data, synedb.Beamline):
@@ -626,11 +532,4 @@ if True:
                 self.id_PERIOD.setEnabled(False)
                 self.id_NP.setEnabled(False)
 
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    w = OWxtc()
-    w.show()
-    app.exec()
-    w.saveSettings()
+add_parameter_to_module(__name__, OWxtc)

@@ -1,14 +1,17 @@
 import numpy
-from PyQt5.QtWidgets import QApplication
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui, congruence
+from orangewidget.widget import Input
+
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.widget.util import congruence
+from oasys2.canvas.util.oasys_util import add_parameter_to_module
 
 from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
 
 from xoppylib.xoppy_run_binaries import xoppy_calc_xtube_w
-from oasys.widgets.exchange import DataExchangeObject
 
 class OWxtube_w(XoppyWidget):
     name = "Tube_W"
@@ -27,7 +30,6 @@ class OWxtube_w(XoppyWidget):
         super().__init__(show_script_tab=True)
 
     def build_gui(self):
-
         box = oasysgui.widgetBox(self.controlArea, self.name + " Input Parameters",orientation="vertical", width=self.CONTROL_AREA_WIDTH-5)
         
         idx = -1 
@@ -156,12 +158,4 @@ if True:
         return ["Flux [photons/1keV(bw)/mA/mm^2(@1m)/s])"]
 
 
-
-
-if __name__ == "__main__":
-    import sys
-    app = QApplication(sys.argv)
-    w = OWxtube_w()
-    w.show()
-    app.exec()
-    w.saveSettings()
+add_parameter_to_module(__name__, OWxtube_w)

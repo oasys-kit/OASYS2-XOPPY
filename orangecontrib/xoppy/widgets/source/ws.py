@@ -2,14 +2,16 @@ from PyQt5.QtWidgets import QApplication
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui, congruence
-from oasys.widgets.exchange import DataExchangeObject
+from orangewidget.widget import Input
+
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.widget.util import congruence
+from oasys2.canvas.util.oasys_util import add_parameter_to_module
 
 from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
 
-
 import numpy
-import scipy.constants as codata
 
 from syned.widget.widget_decorator import WidgetDecorator
 import syned.beamline.beamline as synedb
@@ -43,13 +45,17 @@ class OWws(XoppyWidget,WidgetDecorator):
     NXP = Setting(10)
     NYP = Setting(10)
 
-    inputs = WidgetDecorator.syned_input_data()
+    class Inputs:
+        __syned_input_data__ = WidgetDecorator.syned_input_data()
+
+        syned_data = Input(name=__syned_input_data__[0][0],
+                           type=__syned_input_data__[0][1],
+                           id=__syned_input_data__[0][0], default=True, auto_summary=False)
 
     def __init__(self):
         super().__init__(show_script_tab=True)
 
     def build_gui(self):
-
         box = oasysgui.widgetBox(self.controlArea, self.name + " Input Parameters", orientation="vertical", width=self.CONTROL_AREA_WIDTH-5)
 
         idx = -1 
@@ -343,8 +349,8 @@ if True:
     def getLogPlot(self):
         return [(True, True),(True, True),(False, False)]
 
+    @Inputs.syned_data
     def receive_syned_data(self, data):
-
         if isinstance(data, synedb.Beamline):
             if not data._light_source is None and isinstance(data._light_source._magnetic_structure, synedid.InsertionDevice):
                 light_source = data._light_source
@@ -376,11 +382,4 @@ if True:
                 self.id_PERIOD.setEnabled(False)
                 self.id_KY.setEnabled(False)
 
-if __name__ == "__main__":
-    import os, sys
-    os.environ['LD_LIBRARY_PATH'] = ''
-    app = QApplication(sys.argv)
-    w = OWws()
-    w.show()
-    app.exec()
-    w.saveSettings()
+add_parameter_to_module(__name__, OWws)

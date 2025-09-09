@@ -1,14 +1,15 @@
 import numpy
-from PyQt5.QtWidgets import QApplication
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui, congruence
+
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.canvas.util.oasys_util import add_parameter_to_module
 
 from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
 
 from xoppylib.xoppy_run_binaries import xoppy_calc_xtubes
-from oasys.widgets.exchange import DataExchangeObject
 
 class OWxtubes(XoppyWidget):
     name = "Tubes"
@@ -145,12 +146,4 @@ if True:
 # --------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------
 
-
-
-if __name__ == "__main__":
-    import sys
-    app = QApplication(sys.argv)
-    w = OWxtubes()
-    w.show()
-    app.exec()
-    w.saveSettings()
+add_parameter_to_module(__name__, OWxtubes)

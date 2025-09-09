@@ -4,8 +4,12 @@ from PyQt5.QtWidgets import QApplication
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui, congruence
-from oasys.widgets.exchange import DataExchangeObject
+from orangewidget.widget import Input
+
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.widget.util import congruence
+from oasys2.canvas.util.oasys_util import add_parameter_to_module
 
 from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
 from xoppylib.sources.xoppy_bm_wiggler import xoppy_calc_wigg
@@ -14,7 +18,7 @@ from syned.widget.widget_decorator import WidgetDecorator
 import syned.beamline.beamline as synedb
 import syned.storage_ring.magnetic_structures.insertion_device as synedid
 
-class OWxwiggler(XoppyWidget,WidgetDecorator):
+class OWxwiggler(XoppyWidget, WidgetDecorator):
     name = "WIGGLER"
     id = "orange.widgets.dataxwiggler"
     description = "Wiggler Spectrum (Full Emission)"
@@ -35,7 +39,12 @@ class OWxwiggler(XoppyWidget,WidgetDecorator):
     CURRENT = Setting(200.0)
     FILE = Setting("?")
 
-    inputs = WidgetDecorator.syned_input_data()
+    class Inputs:
+        __syned_input_data__ = WidgetDecorator.syned_input_data()
+
+        syned_data = Input(name=__syned_input_data__[0][0],
+                           type=__syned_input_data__[0][1],
+                           id=__syned_input_data__[0][0], default=True, auto_summary=False)
 
     def __init__(self):
         super().__init__(show_script_tab=True)
@@ -291,7 +300,7 @@ if True:
     def getTagToPlot(self):
         return ["xoppy_data", "xoppy_data", "xoppy_data", "xoppy_traj", "xoppy_traj", "xoppy_traj"]
 
-
+    @Inputs.syned_data
     def receive_syned_data(self, data):
 
         if isinstance(data, synedb.Beamline):
@@ -384,38 +393,4 @@ if True:
             else:
                 raise Exception("Empty Data")
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    w = OWxwiggler()
-
-    # # external:
-    # w.FIELD = 1
-    # w.NPERIODS = 1
-    # w.ENERGY = 6.0
-    # w.PHOT_ENERGY_MIN = 100.0
-    # w.PHOT_ENERGY_MAX = 100100.0
-    # w.NPOINTS = 100
-    # w.NTRAJPOINTS = 101
-    # w.CURRENT = 200.0
-    # w.FILE = "http://ftp.esrf.fr/pub/scisoft/syned/resources/SW_3P.txt"
-
-    w.show()
-    app.exec()
-    w.saveSettings()
-
-
-    # e, f0, p0, cumulated_power = xoppy_calc_wigg(
-    #     FIELD=1,
-    #     NPERIODS=1,
-    #     ULAMBDA=1.0,
-    #     K=1.0,
-    #     ENERGY=6.0,
-    #     PHOT_ENERGY_MIN=100.0,
-    #     PHOT_ENERGY_MAX=100100.0,
-    #     NPOINTS=200,
-    #     NTRAJPOINTS=101,
-    #     CURRENT=200.0,
-    #     FILE="http://ftp.esrf.fr/pub/scisoft/syned/resources/SW_3P.txt")
-
-
-
+add_parameter_to_module(__name__, OWxwiggler)

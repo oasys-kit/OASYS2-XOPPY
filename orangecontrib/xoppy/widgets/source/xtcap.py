@@ -1,15 +1,15 @@
-import sys, os
+import sys
 import numpy
 from PyQt5.QtWidgets import QApplication
 
-import platform
-
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui, congruence
+from orangewidget.widget import Input
 
-from xoppylib.xoppy_util import locations
-from oasys.widgets.exchange import DataExchangeObject
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.widget.util import congruence
+from oasys2.canvas.util.oasys_util import add_parameter_to_module
 
 from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
 
@@ -54,13 +54,17 @@ class OWtcap(XoppyWidget):
     METHOD = Setting(0)
     BSL = Setting(0)
 
-    inputs = WidgetDecorator.syned_input_data()
+    class Inputs:
+        __syned_input_data__ = WidgetDecorator.syned_input_data()
+
+        syned_data = Input(name=__syned_input_data__[0][0],
+                           type=__syned_input_data__[0][1],
+                           id=__syned_input_data__[0][0], default=True, auto_summary=False)
 
     def __init__(self):
         super().__init__(show_script_tab=True)
 
     def build_gui(self):
-
         self.IMAGE_WIDTH = 850
 
         tabs_setting = oasysgui.tabWidget(self.controlArea)
@@ -563,8 +567,8 @@ if True:
     def getLogPlot(self):
         return[(False, True), (False, False), (False, False), (False, False),(False, False)]
 
+    @Inputs.syned_data
     def receive_syned_data(self, data):
-
         if isinstance(data, synedb.Beamline):
             if not data.get_light_source() is None and isinstance(data.get_light_source().get_magnetic_structure(), synedid):
                 light_source = data.get_light_source()
@@ -618,13 +622,4 @@ if True:
                 self.id_PERIOD.setEnabled(False)
                 self.id_NP.setEnabled(False)
 
-
-
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    w = OWtcap()
-    w.show()
-    app.exec()
-    w.saveSettings()
+add_parameter_to_module(__name__, OWtcap)

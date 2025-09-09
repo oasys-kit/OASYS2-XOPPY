@@ -14,10 +14,8 @@ from xoppylib.sources.xoppy_bm_wiggler import xoppy_calc_bm
 
 # TODO show flux(psi) and 2D plot
 from syned.widget.widget_decorator import WidgetDecorator
-
 from syned.storage_ring.magnetic_structures.bending_magnet import BendingMagnet
 import syned.beamline.beamline as synedb
-
 
 import scipy.constants as codata
 
