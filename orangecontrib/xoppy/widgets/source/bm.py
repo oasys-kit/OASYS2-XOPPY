@@ -68,32 +68,32 @@ class OWbm(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         gui.comboBox(box1, self, "TYPE_CALC",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['Energy or Power spectra', 'Angular distribution (all wavelengths)', 'Angular distribution (one wavelength)', '2D flux and power (angular,energy) distribution'],
-                    valueType=int, orientation="horizontal", callback=self.set_TYPE_CALC)
+                    orientation="horizontal", callback=self.set_TYPE_CALC)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 1 
         idx += 1 
         self.id_MACHINE_NAME = box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "MACHINE_NAME",
-                     label=self.unitLabels()[idx], addSpace=False, orientation="horizontal")
+                     label=self.unitLabels()[idx], orientation="horizontal")
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 2 
         idx += 1 
         box1 = gui.widgetBox(box) 
         gui.comboBox(box1, self, "RB_CHOICE",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['Magnetic Radius', 'Magnetic Field'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                    orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 3 
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_MACHINE_R_M = oasysgui.lineEdit(box1, self, "MACHINE_R_M",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -101,7 +101,7 @@ class OWbm(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_BFIELD_T = oasysgui.lineEdit(box1, self, "BFIELD_T",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -109,7 +109,7 @@ class OWbm(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_BEAM_ENERGY_GEV = oasysgui.lineEdit(box1, self, "BEAM_ENERGY_GEV",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -117,7 +117,7 @@ class OWbm(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_CURRENT_A = oasysgui.lineEdit(box1, self, "CURRENT_A",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -125,7 +125,7 @@ class OWbm(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "HOR_DIV_MRAD",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -133,16 +133,16 @@ class OWbm(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         gui.comboBox(box1, self, "VER_DIV",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                      items=['Full (integrated in Psi)', 'At Psi=0', 'In [PsiMin,PsiMax]', 'At Psi=Psi_Min'],
-                     valueType=int, orientation="horizontal", callback=self.set_VER_DIV, labelWidth=250)
+                     orientation="horizontal", callback=self.set_VER_DIV, labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 9 
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "PHOT_ENERGY_MIN",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -150,7 +150,7 @@ class OWbm(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "PHOT_ENERGY_MAX",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -158,7 +158,7 @@ class OWbm(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "NPOINTS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -166,16 +166,16 @@ class OWbm(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         gui.comboBox(box1, self, "LOG_CHOICE",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['Lin', 'Log'],
-                    valueType=int, orientation="horizontal", labelWidth=350)
+                    orientation="horizontal", labelWidth=350)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 13 
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "PSI_MRAD_PLOT",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -183,7 +183,7 @@ class OWbm(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "PSI_MIN",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -191,7 +191,7 @@ class OWbm(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "PSI_MAX",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -199,7 +199,7 @@ class OWbm(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "PSI_NPOINTS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
 
@@ -207,9 +207,9 @@ class OWbm(XoppyWidget, WidgetDecorator):
         idx += 1
         box1 = gui.widgetBox(box)
         gui.comboBox(box1, self, "FILE_DUMP",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                      items=['No', 'YES (bm.spec)'],
-                     valueType=int, orientation="horizontal", labelWidth=250)
+                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
     def unitLabels(self):

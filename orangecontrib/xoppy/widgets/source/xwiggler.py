@@ -1,6 +1,4 @@
-import sys
 import numpy
-from PyQt5.QtWidgets import QApplication
 
 from orangewidget import gui
 from orangewidget.settings import Setting
@@ -59,16 +57,16 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_FIELD = gui.comboBox(box1, self, "FIELD",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['Sinusoidal', 'B from file', 'B from harmonics'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                    orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 1 
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_NPERIODS = oasysgui.lineEdit(box1, self, "NPERIODS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -76,7 +74,7 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_ULAMBDA = oasysgui.lineEdit(box1, self, "ULAMBDA",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -84,7 +82,7 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_K = oasysgui.lineEdit(box1, self, "K",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -92,7 +90,7 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_ENERGY = oasysgui.lineEdit(box1, self, "ENERGY",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -100,7 +98,7 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "PHOT_ENERGY_MIN",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -108,7 +106,7 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "PHOT_ENERGY_MAX",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -116,7 +114,7 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "NPOINTS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
 
@@ -125,7 +123,7 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "NTRAJPOINTS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -133,7 +131,7 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_CURRENT = oasysgui.lineEdit(box1, self, "CURRENT",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -142,10 +140,10 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
 
         box1 = gui.widgetBox(box)
 
-        file_box = oasysgui.widgetBox(box1, "", addSpace=False, orientation="horizontal", height=25)
+        file_box = oasysgui.widgetBox(box1, "", orientation="horizontal", height=25)
 
         self.le_file = oasysgui.lineEdit(file_box, self, "FILE",
-                                         label=self.unitLabels()[idx], addSpace=False, orientation="horizontal")
+                                         label=self.unitLabels()[idx], orientation="horizontal")
         self.show_at(self.unitFlags()[idx], box1) 
 
         gui.button(file_box, self, "...", callback=self.selectFile)

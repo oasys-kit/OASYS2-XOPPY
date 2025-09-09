@@ -38,14 +38,14 @@ class OWblack_body(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "TITLE",
-                     label=self.unitLabels()[idx], addSpace=False, orientation="horizontal")
+                     label=self.unitLabels()[idx], orientation="horizontal")
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 1 
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "TEMPERATURE",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -53,7 +53,7 @@ class OWblack_body(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "E_MIN",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -61,7 +61,7 @@ class OWblack_body(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "E_MAX",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -69,7 +69,7 @@ class OWblack_body(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "NPOINTS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
 

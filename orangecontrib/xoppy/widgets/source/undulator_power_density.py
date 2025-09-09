@@ -1,6 +1,3 @@
-import sys
-from PyQt5.QtWidgets import QApplication
-
 from orangewidget import gui
 from orangewidget.settings import Setting
 from orangewidget.widget import Input
@@ -75,10 +72,8 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         #
         idx += 1
         box1 = gui.widgetBox(box)
-        gui.comboBox(box1, self, "USEEMITTANCES",
-                     label=self.unitLabels()[idx], addSpace=False,
-                    items=['No', 'Yes'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+        gui.comboBox(box1, self, "USEEMITTANCES", label=self.unitLabels()[idx],
+                    items=['No', 'Yes'], orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
 
@@ -87,7 +82,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         box1 = gui.widgetBox(box) 
 
         self.id_ELECTRONENERGY = oasysgui.lineEdit(box1, self, "ELECTRONENERGY",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
 
         self.show_at(self.unitFlags()[idx], box1)
@@ -96,7 +91,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_ELECTRONENERGYSPREAD = oasysgui.lineEdit(box1, self, "ELECTRONENERGYSPREAD",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -104,7 +99,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_ELECTRONCURRENT = oasysgui.lineEdit(box1, self, "ELECTRONCURRENT",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -112,7 +107,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_ELECTRONBEAMSIZEH = oasysgui.lineEdit(box1, self, "ELECTRONBEAMSIZEH",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -120,7 +115,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_ELECTRONBEAMSIZEV = oasysgui.lineEdit(box1, self, "ELECTRONBEAMSIZEV",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -128,7 +123,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_ELECTRONBEAMDIVERGENCEH = oasysgui.lineEdit(box1, self, "ELECTRONBEAMDIVERGENCEH",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -136,7 +131,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_ELECTRONBEAMDIVERGENCEV = oasysgui.lineEdit(box1, self, "ELECTRONBEAMDIVERGENCEV",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -144,7 +139,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_PERIODID = oasysgui.lineEdit(box1, self, "PERIODID",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -152,7 +147,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_NPERIODS = oasysgui.lineEdit(box1, self, "NPERIODS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -160,7 +155,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_KV = oasysgui.lineEdit(box1, self, "KV",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
 
@@ -168,7 +163,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1
         box1 = gui.widgetBox(box)
         self.id_KH = oasysgui.lineEdit(box1, self, "KH",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -176,7 +171,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1
         box1 = gui.widgetBox(box)
         self.id_KPHASE = oasysgui.lineEdit(box1, self, "KPHASE",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -185,7 +180,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "DISTANCE",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -193,7 +188,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "GAPH",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -201,7 +196,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "GAPV",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -209,7 +204,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "HSLITPOINTS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -217,17 +212,15 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "VSLITPOINTS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 15 
         idx += 1 
         box1 = gui.widgetBox(box) 
-        gui.comboBox(box1, self, "METHOD",
-                     label=self.unitLabels()[idx], addSpace=False,
-                    items=['US', 'URGENT', 'SRW'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+        gui.comboBox(box1, self, "METHOD", label=self.unitLabels()[idx],
+                     items=['US', 'URGENT', 'SRW'], orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
 
         #
@@ -237,10 +230,8 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         #widget index 16
         idx += 1
         box1 = gui.widgetBox(box)
-        gui.comboBox(box1, self, "MASK_FLAG",
-                     label=self.unitLabels()[idx], addSpace=False,
-                    items=['No', 'Yes'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+        gui.comboBox(box1, self, "MASK_FLAG", label=self.unitLabels()[idx],
+                    items=['No', 'Yes'], orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
 
@@ -248,7 +239,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "MASK_ROT_H_DEG",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -256,7 +247,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "MASK_ROT_V_DEG",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -264,7 +255,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "MASK_H_MIN",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -272,7 +263,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "MASK_H_MAX",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -280,7 +271,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "MASK_V_MIN",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -288,17 +279,15 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "MASK_V_MAX",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
         #widget index 23
         idx += 1
         box1 = gui.widgetBox(box)
-        gui.comboBox(box1, self, "H5_FILE_DUMP",
-                     label=self.unitLabels()[idx], addSpace=False,
-                    items=['No', 'Yes: undulator_power_density.h5'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+        gui.comboBox(box1, self, "H5_FILE_DUMP", label=self.unitLabels()[idx],
+                    items=['No', 'Yes: undulator_power_density.h5'], orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
     def unitLabels(self):

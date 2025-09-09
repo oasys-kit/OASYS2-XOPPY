@@ -1,9 +1,6 @@
-import sys
 import numpy
 from collections import OrderedDict
 import scipy.constants as codata
-
-from PyQt5.QtWidgets import QApplication
 
 from orangewidget import gui
 from orangewidget.settings import Setting
@@ -13,7 +10,6 @@ from oasys2.widget import gui as oasysgui
 from oasys2.widget.util.exchange import DataExchangeObject
 from oasys2.widget.util import congruence
 from oasys2.canvas.util.oasys_util import add_parameter_to_module
-
 
 from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
 from xoppylib.sources.srundplug import tuning_curves_on_slit
@@ -70,19 +66,17 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         gui.comboBox(box1, self, "USEEMITTANCES",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['No', 'Yes'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                    orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
-
-
 
 
         #widget index 0
         idx += 1
         box1 = gui.widgetBox(box)
         self.id_ELECTRONENERGY = oasysgui.lineEdit(box1, self, "ELECTRONENERGY",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -90,7 +84,7 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         self.id_ELECTRONENERGYSPREAD = oasysgui.lineEdit(box1, self, "ELECTRONENERGYSPREAD",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -98,7 +92,7 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         self.id_ELECTRONCURRENT = oasysgui.lineEdit(box1, self, "ELECTRONCURRENT",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -106,7 +100,7 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         self.id_ELECTRONBEAMSIZEH = oasysgui.lineEdit(box1, self, "ELECTRONBEAMSIZEH",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -114,7 +108,7 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         self.id_ELECTRONBEAMSIZEV = oasysgui.lineEdit(box1, self, "ELECTRONBEAMSIZEV",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -122,7 +116,7 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         self.id_ELECTRONBEAMDIVERGENCEH = oasysgui.lineEdit(box1, self, "ELECTRONBEAMDIVERGENCEH",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -130,7 +124,7 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         self.id_ELECTRONBEAMDIVERGENCEV = oasysgui.lineEdit(box1, self, "ELECTRONBEAMDIVERGENCEV",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -138,7 +132,7 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         self.id_PERIODID = oasysgui.lineEdit(box1, self, "PERIODID",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -146,7 +140,7 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         self.id_NPERIODS = oasysgui.lineEdit(box1, self, "NPERIODS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -155,7 +149,7 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "DISTANCE",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -163,7 +157,7 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "GAPH",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -171,7 +165,7 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "GAPV",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -179,7 +173,7 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "KMIN",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -187,7 +181,7 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         self.id_KMAX = oasysgui.lineEdit(box1, self, "KMAX",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -195,7 +189,7 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "KPOINTS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -204,7 +198,7 @@ class OWtc_slit(XoppyWidget):
         box1 = gui.widgetBox(box)
         # TODO: add validator
         oasysgui.lineEdit(box1, self, "HARMONICS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=str, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -212,9 +206,9 @@ class OWtc_slit(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         gui.comboBox(box1, self, "METHOD",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['US', 'URGENT', 'SRW'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                    orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
 

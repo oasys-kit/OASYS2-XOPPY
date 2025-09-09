@@ -1,6 +1,4 @@
-import sys
 import numpy
-from PyQt5.QtWidgets import QApplication
 
 from orangewidget import gui
 from orangewidget.settings import Setting
@@ -81,7 +79,7 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_ENERGY = oasysgui.lineEdit(box1, self, "ENERGY",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -89,7 +87,7 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_CURRENT = oasysgui.lineEdit(box1, self, "CURRENT",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -97,7 +95,7 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_ENERGY_SPREAD = oasysgui.lineEdit(box1, self, "ENERGY_SPREAD",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
       
@@ -105,7 +103,7 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_SIGX = oasysgui.lineEdit(box1, self, "SIGX",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -113,7 +111,7 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_SIGY = oasysgui.lineEdit(box1, self, "SIGY",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -121,7 +119,7 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_SIGX1 = oasysgui.lineEdit(box1, self, "SIGX1",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -129,7 +127,7 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_SIGY1 = oasysgui.lineEdit(box1, self, "SIGY1",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
   
@@ -137,7 +135,7 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_PERIOD = oasysgui.lineEdit(box1, self, "PERIOD",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -145,7 +143,7 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_NP = oasysgui.lineEdit(box1, self, "NP",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
        
@@ -153,7 +151,7 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "EMIN",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -161,7 +159,7 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "EMAX",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float,  orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -169,7 +167,7 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "N",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
         
@@ -177,7 +175,7 @@ class OWtcap(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "DISTANCE",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -185,7 +183,7 @@ class OWtcap(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "XPS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -193,7 +191,7 @@ class OWtcap(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "YPS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -201,7 +199,7 @@ class OWtcap(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "XPC",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -209,7 +207,7 @@ class OWtcap(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "YPC",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -219,7 +217,7 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "HARMONIC_FROM",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -227,7 +225,7 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "HARMONIC_TO",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -235,7 +233,7 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "HARMONIC_STEP",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -243,25 +241,25 @@ class OWtcap(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         gui.comboBox(box1, self, "HRED",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                      items=['No', 'Yes'],
-                     valueType=int, orientation="horizontal", labelWidth=350)
+                     orientation="horizontal", labelWidth=350)
         self.show_at(self.unitFlags()[idx], box1)
 
         #widget index 22
         idx += 1
         box1 = gui.widgetBox(box)
         gui.comboBox(box1, self, "HELICAL",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                      items=['Planar undulator', 'Helical undulator'],
-                     valueType=int, orientation="horizontal", labelWidth=250)
+                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
         #widget index 23 
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "NEKS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -269,18 +267,18 @@ class OWtcap(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         gui.comboBox(box1, self, "METHOD",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                      items=['Infinite N +convolution (Dejus)','Infinite N +convolution (Dejus)','Infinite N +convolution(Walker)','Finite-N'],
-                     valueType=int, orientation="horizontal", labelWidth=150)
+                     orientation="horizontal", labelWidth=150)
         self.show_at(self.unitFlags()[idx], box1)
        
         #widget index 25
         idx += 1 
         box1 = gui.widgetBox(box) 
         gui.comboBox(box1, self, "BSL",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                      items=['No', 'Yes'],
-                     valueType=int, orientation="horizontal", labelWidth=350)
+                     rientation="horizontal", labelWidth=350)
         self.show_at(self.unitFlags()[idx], box1)
 
     def unitLabels(self):

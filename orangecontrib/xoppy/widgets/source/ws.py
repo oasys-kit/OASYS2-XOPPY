@@ -65,7 +65,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_ENERGY = oasysgui.lineEdit(box1, self, "ENERGY",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -73,7 +73,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_CUR = oasysgui.lineEdit(box1, self, "CUR",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -81,7 +81,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_PERIOD = oasysgui.lineEdit(box1, self, "PERIOD",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -89,7 +89,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_N = oasysgui.lineEdit(box1, self, "N",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
 
@@ -98,7 +98,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         # idx += 1
         # box1 = gui.widgetBox(box)
         # oasysgui.lineEdit(box1, self, "KX",
-        #              label=self.unitLabels()[idx], addSpace=False,
+        #              label=self.unitLabels()[idx],
         #             valueType=float, orientation="horizontal", labelWidth=250)
         # self.show_at(self.unitFlags()[idx], box1)
         
@@ -106,7 +106,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.id_KY = oasysgui.lineEdit(box1, self, "KY",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -114,7 +114,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "EMIN",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -122,7 +122,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "EMAX",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -130,7 +130,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "NEE",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -138,7 +138,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "D",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -146,7 +146,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "XPC",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -154,7 +154,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "YPC",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -162,7 +162,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "XPS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -170,7 +170,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "YPS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -178,7 +178,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "NXP",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -186,7 +186,7 @@ class OWws(XoppyWidget,WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "NYP",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
 

@@ -2,7 +2,6 @@ import numpy
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from orangewidget.widget import Input
 
 from oasys2.widget import gui as oasysgui
 from oasys2.widget.util.exchange import DataExchangeObject
@@ -38,7 +37,7 @@ class OWxtube_w(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "VOLTAGE",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -46,7 +45,7 @@ class OWxtube_w(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "RIPPLE",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
@@ -54,7 +53,7 @@ class OWxtube_w(XoppyWidget):
         idx += 1 
         box1 = gui.widgetBox(box) 
         oasysgui.lineEdit(box1, self, "AL_FILTER",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
 
