@@ -1,14 +1,14 @@
-from PyQt5 import QtGui, QtWidgets
-
-from orangewidget import widget, gui
-from orangewidget.settings import Setting
 import numpy
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from PyQt5 import QtWidgets
 
-from oasys.widgets.exchange import DataExchangeObject
+from orangewidget.widget import Input
+from oasys2.widget.widget import OWWidget
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.canvas.util.oasys_util import add_parameter_to_module
 
-class OWPlotSimpleExchange(widget.OWWidget):
+class OWPlotSimpleExchange(OWWidget):
     name = "Xoppy-Data Plot"
     id = "orange.widgets.data.widget_name"
     description = ""
@@ -18,67 +18,15 @@ class OWPlotSimpleExchange(widget.OWWidget):
     priority = 10
     category = ""
     keywords = ["list", "of", "keywords"]
-    inputs = [{"name": "xoppy_data",
-                "type": DataExchangeObject,
-                "doc": "",
-                "handler": "do_plot" }, ]
 
+    class Inputs:
+        xoppy_data = Input("xoppy_data", DataExchangeObject, default=True, auto_summary=False)
 
     def __init__(self):
         super().__init__()
         self.figure_canvas = None
 
-    '''
-    def do_plot(self, exchange_data):
-        print(">>plot_data_exchange: data received")
-        plot_type = None
-        try:
-            data = exchange_data.get_content("data")
-            plot_type = "1D"
-        except:
-            pass
-        try:
-            data = exchange_data.get_content("data2D")
-            plot_type = "2D"
-        except:
-            pass
-
-        if plot_type == None:
-            print(">>plot_data_exchange: Nothing to plot")
-            return
-
-        if plot_type == "1D":
-            print(">>plot_data_exchange: plotting 1D")
-            try:
-                xcol = exchange_data.get_content("plot_x_col")
-            except:
-                xcol = 0
-            try:
-                ycol = exchange_data.get_content("plot_y_col")
-            except:
-                ycol = 0
-
-            x = data[xcol,:]
-            y = data[ycol,:]
-            x.shape = -1
-            y.shape = -1
-            fig = plt.figure()
-            plt.plot(x,y,linewidth=1.0, figure=fig)
-            try:
-                plt.title(exchange_data.get_content("name"))
-            except:
-                pass
-            try:
-                plt.xlabel(exchange_data.get_content("labels")[xcol])
-            except:
-                pass
-            try:
-                plt.ylabel(exchange_data.get_content("labels")[ycol])
-            except:
-                pass
-            plt.grid(True)
-    '''
-
+    @Inputs.xoppy_data
     def do_plot(self, exchange_data):
         print(">>plot_data_exchange: data received")
         plot_type = None
@@ -152,6 +100,10 @@ class OWPlotSimpleExchange(widget.OWWidget):
         self.figure_canvas = FigureCanvas(fig) #plt.figure())
         self.mainArea.layout().addWidget(self.figure_canvas)
 
+add_parameter_to_module(__name__, OWPlotSimpleExchange)
+
+
+
 def example_1d():
     app = QtWidgets.QApplication([])
     ow = OWPlotSimpleExchange()
@@ -187,7 +139,6 @@ def example_2d():
     ow.saveSettings()
 
 if __name__ == '__main__':
-
     example_1d()
     example_2d()
 
