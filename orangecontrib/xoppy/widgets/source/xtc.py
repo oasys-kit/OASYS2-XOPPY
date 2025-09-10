@@ -47,11 +47,7 @@ class OWxtc(XoppyWidget):
     NEKS = Setting(100)
 
     class Inputs:
-        __syned_input_data__ = WidgetDecorator.syned_input_data()
-
-        syned_data = Input(name=__syned_input_data__[0][0],
-                           type=__syned_input_data__[0][1],
-                           id=__syned_input_data__[0][0], default=True, auto_summary=False)
+        syned_data = WidgetDecorator.syned_input_data()
 
     def __init__(self):
         super().__init__(show_script_tab=True)
