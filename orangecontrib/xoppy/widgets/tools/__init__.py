@@ -1,6 +1,6 @@
 __author__ = 'srio'
 
-NAME = "XOPPY: Tools"
+NAME = "XOPPY \u23F5 Tools"
 
 ID = "orangecontrib.xoppy.widgets.tools"
 
@@ -16,3 +16,4 @@ ICON = "icons/xoppy_2.png"
 BACKGROUND = "#FFD39F"
 
 PRIORITY = 2003
+
