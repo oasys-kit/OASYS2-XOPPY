@@ -9,7 +9,7 @@ from orangewidget.widget import Input
 from oasys2.widget import gui as oasysgui
 from oasys2.widget.util.exchange import DataExchangeObject
 from oasys2.widget.util import congruence
-from oasys2.canvas.util.oasys_util import add_parameter_to_module
+from oasys2.canvas.util.canvas_util import add_parameter_to_module
 
 from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
 from xoppylib.sources.srundplug import tuning_curves_on_slit

@@ -9,10 +9,8 @@ from orangewidget.settings import Setting
 from oasys.widgets import gui as oasysgui, congruence
 
 from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
-import orangecanvas.resources as resources
 
-
-from oasys.util.oasys_util import EmittingStream, TTYGrabber
+from oasys2.widget.util.widget_objects import EmittingStream, TTYGrabber
 
 import syned.beamline.beamline as synedb
 import syned.storage_ring.magnetic_structures.insertion_device as synedid

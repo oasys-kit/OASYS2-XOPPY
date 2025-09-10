@@ -4,11 +4,11 @@ from PyQt5.QtWidgets import QSizePolicy
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from orangewidget.widget import Input
 
 from oasys2.widget import gui as oasysgui
 from oasys2.widget.util.exchange import DataExchangeObject
-from oasys2.canvas.util.oasys_util import EmittingStream, TTYGrabber, add_parameter_to_module
+from oasys2.widget.util.widget_util import EmittingStream, TTYGrabber
+from oasys2.canvas.util.canvas_util import add_parameter_to_module
 
 from syned.widget.widget_decorator import WidgetDecorator
 import syned.beamline.beamline as synedb

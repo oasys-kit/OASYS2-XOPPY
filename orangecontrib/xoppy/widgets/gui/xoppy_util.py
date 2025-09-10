@@ -15,12 +15,6 @@ from oasys2.widget import gui
 from orangecontrib.xoppy.widgets.gui.text_window import TextWindow
 from xoppylib.xoppy_util import locations
 
-class EmittingStream(QtCore.QObject):
-    textWritten = QtCore.pyqtSignal(str)
-
-    def write(self, text):
-        self.textWritten.emit(str(text))
-
 def xoppy_doc(app):
     home_doc = locations.home_doc()
 

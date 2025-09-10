@@ -6,7 +6,7 @@ from PyQt5 import QtWidgets
 from orangewidget.widget import Input
 from oasys2.widget.widget import OWWidget
 from oasys2.widget.util.exchange import DataExchangeObject
-from oasys2.canvas.util.oasys_util import add_parameter_to_module
+from oasys2.canvas.util.canvas_util import add_parameter_to_module
 
 class OWPlotSimpleExchange(OWWidget):
     name = "Xoppy-Data Plot"

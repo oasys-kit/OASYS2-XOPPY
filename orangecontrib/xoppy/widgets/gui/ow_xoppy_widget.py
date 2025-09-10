@@ -21,7 +21,7 @@ from orangewidget.settings import Setting
 from oasys2.widget.widget import OWAction, OWWidget
 from oasys2.widget import gui as oasysgui
 from oasys2.widget.util.exchange import DataExchangeObject
-from oasys2.canvas.util.oasys_util import EmittingStream
+from oasys2.widget.util.widget_util import EmittingStream
 
 from orangecontrib.xoppy.util.python_script import PythonScript
 
