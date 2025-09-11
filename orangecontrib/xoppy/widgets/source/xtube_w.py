@@ -6,7 +6,7 @@ from orangewidget.settings import Setting
 from oasys2.widget import gui as oasysgui
 from oasys2.widget.util.exchange import DataExchangeObject
 from oasys2.widget.util import congruence
-from oasys2.canvas.util.canvas_util import add_parameter_to_module
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
 
@@ -157,4 +157,4 @@ if True:
         return ["Flux [photons/1keV(bw)/mA/mm^2(@1m)/s])"]
 
 
-add_parameter_to_module(__name__, OWxtube_w)
+add_widget_parameters_to_module(__name__)

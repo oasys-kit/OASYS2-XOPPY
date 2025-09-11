@@ -7,7 +7,7 @@ from orangewidget.widget import Input
 from oasys2.widget import gui as oasysgui
 from oasys2.widget.util.exchange import DataExchangeObject
 from oasys2.widget.util import congruence
-from oasys2.canvas.util.canvas_util import add_parameter_to_module
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
 from xoppylib.sources.xoppy_bm_wiggler import xoppy_calc_wiggler_radiation, create_magnetic_field_for_bending_magnet
@@ -870,7 +870,7 @@ if True:
     def calculateMagneticRadius(self):
         self.bm_magnetic_radius = numpy.round(numpy.abs((1e9/codata.c)*self.ELECTRONENERGY/self.bm_magnetic_field), 3)
 
-add_parameter_to_module(__name__, OWwiggler_radiation)
+add_widget_parameters_to_module(__name__)
 
 if __name__ == "__main__":
     bl = None
