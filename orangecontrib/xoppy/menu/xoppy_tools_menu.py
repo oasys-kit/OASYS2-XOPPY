@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets
+
 from oasys2.canvas.menus.menu import OMenu
 
 class XoppyToolsMenu(OMenu):

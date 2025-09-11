@@ -59,6 +59,7 @@ ENTRY_POINTS = {
         "XOPPY Sources = orangecontrib.xoppy.widgets.source",
         "XOPPY Optics = orangecontrib.xoppy.widgets.optics",
     ),
+    #'oasys2.menus' : ("xoppymenu = orangecontrib.xoppy.menu",)
 }
 
 if __name__ == '__main__':
