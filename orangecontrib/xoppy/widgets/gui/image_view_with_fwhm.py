@@ -7,12 +7,13 @@ from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QDialog, QVBoxLayout, 
 
 from matplotlib.patches import FancyArrowPatch, ArrowStyle
 
+from orangewidget.gui import OWComponent
 from oasys2.widget import gui
-from oasys2.widget.util.widgets_util import get_sigma, get_fwhm
+from oasys2.widget.util.widget_util import get_sigma, get_fwhm
 
 from silx.gui.plot.ImageView import ImageView
 
-class InfoBoxWidget(QWidget):
+class InfoBoxWidget(QWidget, OWComponent):
     total_field = ""
     fwhm_h_field = ""
     fwhm_v_field = ""
@@ -124,7 +125,7 @@ class InfoBoxWidget(QWidget):
         self.sigma_h.setText("0.0000")
         if hasattr(self, "sigma_v"):  self.sigma_v.setText("0.0000")
 
-class ImageViewWithFWHM(QWidget):
+class ImageViewWithFWHM(QWidget, OWComponent):
     def __init__(self, x_scale_factor = 1.0, y_scale_factor = 1.0):
         super(ImageViewWithFWHM, self).__init__()
 
