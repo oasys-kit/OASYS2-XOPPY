@@ -2,15 +2,14 @@ import sys, os, platform
 import numpy
 from PyQt5.QtWidgets import QApplication, QSizePolicy
 
-from PyQt5 import QtGui, QtWidgets
+from PyQt5 import QtWidgets
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui, congruence
-
-from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
-
-from oasys2.widget.util.widget_objects import EmittingStream, TTYGrabber
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.widget.util.widget_util import EmittingStream, TTYGrabber
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 import syned.beamline.beamline as synedb
 import syned.storage_ring.magnetic_structures.insertion_device as synedid
@@ -23,19 +22,20 @@ import scipy.constants as codata
 
 from silx.gui.plot import Plot2D
 
-from orangecontrib.xoppy.widgets.gui.messages import  showCriticalMessage
+from orangecontrib.xoppy.widgets.gui.messages import showCriticalMessage
+from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
+from orangecontrib.xoppy.widgets.gui.image_view_with_fwhm import ImageViewWithFWHM
+
 from xoppylib.srcalc.srcalc import  load_srcalc_output_file, ray_tracing
 from xoppylib.srcalc.srcalc import  compute_power_density_footprint, compute_power_density_image
 from xoppylib.srcalc.srcalc import  trapezoidal_rule_2d, trapezoidal_rule_2d_1darrays
 from xoppylib.srcalc.srcalc import  write_ansys_files
 from xoppylib.xoppy_util import locations
-from orangecontrib.xoppy.widgets.gui.image_view_with_fwhm import ImageViewWithFWHM
 
 #
 # TODO: Recompile IDPower with higher dimensions
 #                         with better format:                Pow. ref(W)    Pow. abs.(W)
 #                                                            Mirror 1     ***********     ***********
-
 
 class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
 
@@ -49,6 +49,8 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
     category = ""
     keywords = ["srcalc", "IDPower", "power", "Reininger", "OASYS"]
 
+    class Inputs:
+        syned_data = WidgetDecorator.syned_input_data(multi_input=True)
 
     RING_ENERGY = Setting(2.0)
     RING_CURRENT = Setting(0.5)
@@ -144,8 +146,6 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
     RATIO_PIXELS_1 = Setting(1.0)
     DEBUG_RUN_URGENT = Setting(0)
 
-    inputs = WidgetDecorator.syned_input_data()
-
     def __init__(self):
         super().__init__()
 
@@ -160,9 +160,9 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
 
     def build_gui(self):
 
-        self.leftWidgetPart.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
-        self.leftWidgetPart.setMaximumWidth(self.CONTROL_AREA_WIDTH + 20)
-        self.leftWidgetPart.updateGeometry()
+        self.left_side.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
+        self.left_side.setMaximumWidth(self.CONTROL_AREA_WIDTH + 20)
+        self.left_side.updateGeometry()
 
         self.controls_tabs = oasysgui.tabWidget(self.controlArea)
         box = oasysgui.createTabPage(self.controls_tabs, "Light Source")
@@ -330,7 +330,7 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
         gui.comboBox(box1, self, "NELEMENTS",
                     label=self.unitLabels()[idx], addSpace=False,
                     items=['0', '1', '2', '3', '4', '5','6'],
-                    valueType=int, orientation="horizontal", callback=self.set_NELEMENTS,
+                     orientation="horizontal", callback=self.set_NELEMENTS,
                     labelWidth=330)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -371,7 +371,7 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
             gui.comboBox(box1, self, "EL%d_SHAPE"%element_index,
                          label=self.unitLabels()[idx], addSpace=False,
                         items=self.shape_list,
-                        valueType=int, orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
+                        orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
             self.show_at(self.unitFlags()[idx], box1)
 
             #widget index xx
@@ -434,7 +434,7 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
             gui.comboBox(box1, self, "EL%d_RELATIVE_TO_PREVIOUS"%element_index,
                          label=self.unitLabels()[idx], addSpace=False,
                         items=['Left (90)','Right (270)','Up (0)','Down (180)'],
-                        valueType=int, orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
+                        orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
             self.show_at(self.unitFlags()[idx], box1)
 
             #widget index xx
@@ -443,10 +443,8 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
             gui.comboBox(box1, self, "EL%d_COATING"%element_index,
                          label=self.unitLabels()[idx], addSpace=False,
                         items=self.coating_list,
-                        valueType=int, orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
+                        orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
             self.show_at(self.unitFlags()[idx], box1)
-
-
 
         #widget index xx
         idx += 1
@@ -456,7 +454,7 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
         gui.comboBox(box1, self, "RAY_TRACING_IMAGE",
                     label=self.unitLabels()[idx], addSpace=False,
                     items=['No', 'Yes'],
-                    valueType=int, orientation="horizontal", labelWidth=350)
+                    orientation="horizontal", labelWidth=350)
 
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -492,7 +490,7 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
         gui.comboBox(box1, self, "PLOT_MODE",
                     label=self.unitLabels()[idx], addSpace=False,
                     items=['Basic image', 'Image and histograms', 'Image [default]'],
-                    valueType=int, orientation="horizontal", labelWidth=350,
+                    orientation="horizontal", labelWidth=350,
                     callback=self.set_ViewType)
 
         self.show_at(self.unitFlags()[idx], box1)
@@ -505,7 +503,7 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
         gui.comboBox(box1, self, "DO_PLOT_GRID",
                     label=self.unitLabels()[idx], addSpace=False,
                     items=['No [default]', 'Yes (overplotted)', 'Yes (in a new tab)'],
-                    valueType=int, orientation="horizontal", labelWidth=350,
+                    orientation="horizontal", labelWidth=350,
                     callback=self.set_ViewType)
 
         self.show_at(self.unitFlags()[idx], box1)
@@ -518,7 +516,7 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
         gui.comboBox(box1, self, "SHOW_URGENT_PLOTS",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Only source [default]', 'Source + elements'],
-                    valueType=int, orientation="horizontal", labelWidth=350,)
+                    orientation="horizontal", labelWidth=350,)
 
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -534,7 +532,7 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
         gui.comboBox(box1, self, "DUMP_ANSYS_FILES",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['No [default]', 'Yes (as plotted)', 'Yes (transposed)'],
-                    valueType=int, orientation="horizontal", labelWidth=350)
+                    orientation="horizontal", labelWidth=350)
 
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -549,7 +547,7 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
                      label=self.unitLabels()[idx], addSpace=False,
                      items=['relative to previous o.e. [like SHADOW]',
                             'relative to lab frame [default]'],
-                     valueType=int, orientation="horizontal", labelWidth=125)
+                     orientation="horizontal", labelWidth=125)
 
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -561,7 +559,7 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
         gui.comboBox(box1, self, "INTERPOLATION_OR_HISTOGRAMMING",
                      label=self.unitLabels()[idx], addSpace=False,
                      items=['Interpolation [default]', 'Histogramming'],
-                     valueType=int, orientation="horizontal", labelWidth=350)
+                     orientation="horizontal", labelWidth=350)
 
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -573,7 +571,7 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
         gui.comboBox(box1, self, "INTERPOLATION_METHOD",
                      label=self.unitLabels()[idx], addSpace=False,
                      items=['nearest', 'linear', 'cubic [default]'],
-                     valueType=int, orientation="horizontal", labelWidth=350)
+                     orientation="horizontal", labelWidth=350)
 
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -607,7 +605,7 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
         gui.comboBox(box1, self, "DEBUG_RUN_URGENT",
                      label=self.unitLabels()[idx], addSpace=False,
                      items=['No [default]', 'Yes [skip running URGENT]'],
-                     valueType=int, orientation="horizontal", labelWidth=350)
+                     orientation="horizontal", labelWidth=350)
 
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -791,6 +789,18 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
             self.EL0_Q_FOCUS         = congruence.checkPositiveNumber(self.EL0_Q_FOCUS,         "EL0_Q_FOCUS")
             self.EL0_ANG       = congruence.checkPositiveNumber(self.EL0_ANG,       "EL0_ANG")
             self.EL0_THICKNESS = congruence.checkPositiveNumber(self.EL0_THICKNESS, "EL0_THICKNESS")
+
+    @Inputs.syned_data
+    def set_syned_data(self, index, syned_data):
+        self.receive_syned_data(syned_data)
+
+    @Inputs.syned_data.insert
+    def insert_syned_data(self, index, syned_data):
+        self.receive_syned_data(syned_data)
+
+    @Inputs.syned_data.remove
+    def remove_syned_data(self, index):
+        pass
 
     def receive_syned_data(self, data):
         if isinstance(data, synedb.Beamline):
@@ -1750,21 +1760,4 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
 
         TextWindow(file=filename1,parent=self)
 
-
-
-if __name__ == "__main__":
-
-    app = QApplication(sys.argv)
-    w = OWsrcalc_idpower()
-    w.DEBUG_RUN_URGENT = 1
-    w.show()
-    app.exec()
-    w.saveSettings()
-
-
-    # import Shadow
-    # beam = Shadow.Beam()
-    # beam.load("star_srcalc_000.01")
-    # x, z, w = beam.getshcol([1,3,23])
-    # for i in range(5):
-    #     print(x[i], z[i], w[i])
+add_widget_parameters_to_module(__name__)

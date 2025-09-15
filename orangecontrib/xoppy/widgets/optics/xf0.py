@@ -3,21 +3,22 @@ from PyQt5.QtWidgets import QApplication
 from orangewidget import gui
 from orangewidget.settings import Setting
 
-from oasys.widgets import gui as oasysgui, congruence
-from oasys.widgets.exchange import DataExchangeObject
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
-
-from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
-
-from dabax.dabax_files import dabax_f0_files
-
+from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget_dabax import XoppyWidgetDabax
 from xoppylib.scattering_functions.xoppy_calc_f0 import xoppy_calc_f0
 
-import xraylib
+try: import xraylib
+except: print("xraylib not available")
+
+from dabax.dabax_files import dabax_f0_files
 from dabax.dabax_xraylib import DabaxXraylib
 
 
-class OWxf0(XoppyWidget):
+class OWxf0(XoppyWidgetDabax):
     name = "F0"
     id = "orange.widgets.dataxf0"
     description = "Elastic Scattering Function"
@@ -34,17 +35,22 @@ class OWxf0(XoppyWidget):
     DUMP_TO_FILE = Setting(0)  # No
     FILE_NAME    = Setting("f0.dat")
     CHARGE       = Setting(0.0)
-    MATERIAL_CONSTANT_LIBRARY_FLAG = Setting(0)
 
     NIST_NAME    = Setting(177)
-    DABAX_F0_FILE_INDEX = Setting(0)
 
     def __init__(self):
         super().__init__(show_script_tab=True)
 
-    def build_gui(self):
+    def dabax_show_f0(self):
+        return True
 
-        box = oasysgui.widgetBox(self.controlArea, self.name + " Input Parameters", orientation="vertical", width=self.CONTROL_AREA_WIDTH-5)
+    def build_gui(self):
+        ###########
+        tabs_setting = oasysgui.tabWidget(self.controlArea)
+        tabs_setting.setFixedWidth(self.CONTROL_AREA_WIDTH-5)
+        box = oasysgui.createTabPage(tabs_setting, self.name + " Input Parameters")
+        self.tab_dabax = oasysgui.createTabPage(tabs_setting, "Materials Library")
+        ###########
         
         idx = -1 
 
@@ -54,7 +60,7 @@ class OWxf0(XoppyWidget):
         gui.comboBox(box1, self, "MAT_FLAG",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Element(formula)', 'Compound(formula)','Compound(NIST list)'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
 
         #widget index 2
@@ -68,11 +74,11 @@ class OWxf0(XoppyWidget):
         #widget index 3
         idx += 1
         box1 = gui.widgetBox(box)
-        self.nist_list = xraylib.GetCompoundDataNISTList()
+        self.nist_list = DabaxXraylib().GetCompoundDataNISTList()
         gui.comboBox(box1, self, "NIST_NAME",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=self.nist_list,
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
 
@@ -116,27 +122,6 @@ class OWxf0(XoppyWidget):
                      label=self.unitLabels()[idx], addSpace=True)
         self.show_at(self.unitFlags()[idx], box1)
 
-
-        box = oasysgui.widgetBox(self.controlArea, self.name + " Material Library", orientation="vertical", width=self.CONTROL_AREA_WIDTH-5)
-
-        # widget index 10
-        idx += 1
-        box1 = gui.widgetBox(box)
-        gui.comboBox(box1, self, "MATERIAL_CONSTANT_LIBRARY_FLAG",
-                     label=self.unitLabels()[idx], addSpace=True,
-                     items=["xraylib [default]", "dabax"],
-                     orientation="horizontal")
-        self.show_at(self.unitFlags()[idx], box1)
-
-        # widget index 11
-        idx += 1
-        box1 = gui.widgetBox(box)
-        gui.comboBox(box1, self, "DABAX_F0_FILE_INDEX",
-                     label=self.unitLabels()[idx], addSpace=True,
-                     items=dabax_f0_files(),
-                     orientation="horizontal")
-        self.show_at(self.unitFlags()[idx], box1)
-
         gui.rubber(self.controlArea)
 
     def unitLabels(self):
@@ -159,7 +144,6 @@ class OWxf0(XoppyWidget):
 
     def do_xoppy_calculation(self):
 
-
         if self.MAT_FLAG == 2:
             descriptor = self.nist_list[self.NIST_NAME]
         else:
@@ -173,21 +157,9 @@ class OWxf0(XoppyWidget):
             material_constants_library_str = 'DabaxXraylib(file_f0="%s")' % (dabax_f0_files()[self.DABAX_F0_FILE_INDEX])
             print(material_constants_library.info())
 
-        out_dict = xoppy_calc_f0(
-                descriptor                  = descriptor,
-                MAT_FLAG                    = self.MAT_FLAG,
-                GRIDSTART                   = self.GRIDSTART,
-                GRIDEND                     = self.GRIDEND,
-                GRIDN                       = self.GRIDN,
-                DUMP_TO_FILE                = self.DUMP_TO_FILE,
-                FILE_NAME                   = self.FILE_NAME,
-                CHARGE                      = 0.0,
-                material_constants_library  = material_constants_library,
-                )
-
-        if "info" in out_dict.keys():
-            print(out_dict["info"])
-
+        #
+        # script
+        #
         dict_parameters = {
                 "descriptor"                      : descriptor,
                 "MAT_FLAG"                        : self.MAT_FLAG,
@@ -204,6 +176,24 @@ class OWxf0(XoppyWidget):
 
         self.xoppy_script.set_code(script)
 
+        #
+        # run
+        #
+        out_dict = xoppy_calc_f0(
+                descriptor                  = descriptor,
+                MAT_FLAG                    = self.MAT_FLAG,
+                GRIDSTART                   = self.GRIDSTART,
+                GRIDEND                     = self.GRIDEND,
+                GRIDN                       = self.GRIDN,
+                DUMP_TO_FILE                = self.DUMP_TO_FILE,
+                FILE_NAME                   = self.FILE_NAME,
+                CHARGE                      = 0.0,
+                material_constants_library  = material_constants_library,
+                )
+
+        if "info" in out_dict.keys():
+            print(out_dict["info"])
+
         return out_dict
 
     def script_template(self):
@@ -212,7 +202,8 @@ class OWxf0(XoppyWidget):
 # script to make the calculations (created by XOPPY:xf0)
 #
 from xoppylib.scattering_functions.xoppy_calc_f0 import xoppy_calc_f0
-import xraylib
+try: import xraylib
+except: print("xraylib not available")
 from dabax.dabax_xraylib import DabaxXraylib
 
 out_dict =  xoppy_calc_f0(
@@ -275,10 +266,4 @@ if True:
     def getYTitles(self):
         return ["f0 [electron units]"]
 
-if __name__ == "__main__":
-    import sys
-    app = QApplication(sys.argv)
-    w = OWxf0()
-    w.show()
-    app.exec()
-    w.saveSettings()
+add_widget_parameters_to_module(__name__)

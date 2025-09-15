@@ -1,6 +1,6 @@
 __author__ = 'srio'
 
-NAME = "XOPPY \u23F5 Optics"
+NAME = "XOPPY: Optics"
 
 ID = "orangecontrib.xoppy.widgets.optics"
 

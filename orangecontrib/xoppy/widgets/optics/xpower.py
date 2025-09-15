@@ -1,22 +1,28 @@
 import numpy
-from PyQt5.QtWidgets import QApplication, QMessageBox, QSizePolicy
+from PyQt5.QtWidgets import QMessageBox, QSizePolicy
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui, congruence
-from oasys.widgets.exchange import DataExchangeObject
+from orangewidget.widget import Input
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from xoppylib.power.xoppy_calc_power import xoppy_calc_power
 
-from oasys.widgets.exchange import DataExchangeObject
-from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
+from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget_dabax import XoppyWidgetDabax
 
 import scipy.constants as codata
 
-import xraylib
-from dabax.dabax_xraylib import DabaxXraylib
+try: import xraylib
+except: print("xraylib not available")
 
-class OWxpower(XoppyWidget):
+from dabax.dabax_xraylib import DabaxXraylib
+from dabax.dabax_files import dabax_f1f2_files, dabax_crosssec_files
+
+
+class OWxpower(XoppyWidgetDabax):
     name = "POWER"
     id = "orange.widgets.dataxpower"
     description = "Power Absorbed and Transmitted by Optical Elements"
@@ -25,7 +31,8 @@ class OWxpower(XoppyWidget):
     category = ""
     keywords = ["xoppy", "power"]
 
-    inputs = [("ExchangeData", DataExchangeObject, "acceptExchangeData")]
+    class Inputs:
+        exchange_data = Input("ExchangeData", DataExchangeObject, default=True, auto_summary=False)
 
     SOURCE = Setting(2)
     ENER_MIN = Setting(1000.0)
@@ -66,21 +73,30 @@ class OWxpower(XoppyWidget):
     PLOT_SETS = Setting(2)
     FILE_DUMP = 0
 
-    MATERIAL_CONSTANT_LIBRARY_FLAG = Setting(0) # not yet interfaced, to be done
-
     input_spectrum = None
     input_script = None
 
     def __init__(self):
         super().__init__(show_script_tab=True)
 
+    def dabax_show_f1f2(self):
+        return True
+
+    def dabax_show_crosssec(self):
+        return True
+
     def build_gui(self):
+        self.left_side.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
+        self.left_side.setMaximumWidth(self.CONTROL_AREA_WIDTH + 20)
+        self.left_side.updateGeometry()
 
-        self.leftWidgetPart.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
-        self.leftWidgetPart.setMaximumWidth(self.CONTROL_AREA_WIDTH + 20)
-        self.leftWidgetPart.updateGeometry()
-
-        box = oasysgui.widgetBox(self.controlArea, self.name + " Input Parameters", orientation="vertical", width=self.CONTROL_AREA_WIDTH-10)
+        # box = oasysgui.widgetBox(self.controlArea, self.name + " Input Parameters", orientation="vertical", width=self.CONTROL_AREA_WIDTH-10)
+        ###########
+        tabs_setting = oasysgui.tabWidget(self.controlArea)
+        tabs_setting.setFixedWidth(self.CONTROL_AREA_WIDTH-5)
+        box = oasysgui.createTabPage(tabs_setting, self.name + " Input Parameters")
+        self.tab_dabax = oasysgui.createTabPage(tabs_setting, "Materials Library")
+        ###########
 
         idx = -1 
 
@@ -90,7 +106,7 @@ class OWxpower(XoppyWidget):
         self.box_source = gui.comboBox(box1, self, "SOURCE",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['From Oasys wire', 'Normalized to 1 W/eV', 'From external file (eV, W/eV)', 'From external file (eV, phot/s/.1%bw)'],
-                    valueType=int, orientation="horizontal", labelWidth=150)
+                     orientation="horizontal", labelWidth=150)
         self.show_at(self.unitFlags()[idx], box1)
         
         #widget index 6 
@@ -132,7 +148,7 @@ class OWxpower(XoppyWidget):
         gui.comboBox(box1, self, "NELEMENTS",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['1', '2', '3', '4', '5'],
-                    valueType=int, orientation="horizontal", callback=self.set_NELEMENTS, labelWidth=330)
+                     orientation="horizontal", callback=self.set_NELEMENTS, labelWidth=330)
         self.show_at(self.unitFlags()[idx], box1)
 
         #widget index 11
@@ -150,7 +166,7 @@ class OWxpower(XoppyWidget):
         gui.comboBox(box1, self, "EL1_FLAG",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Filter', 'Mirror'],
-                    valueType=int, orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
+                     orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 13 
@@ -199,7 +215,7 @@ class OWxpower(XoppyWidget):
         gui.comboBox(box1, self, "EL2_FLAG",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Filter', 'Mirror'],
-                    valueType=int, orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
+                     orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 19 
@@ -248,7 +264,7 @@ class OWxpower(XoppyWidget):
         gui.comboBox(box1, self, "EL3_FLAG",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Filter', 'Mirror'],
-                    valueType=int, orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
+                     orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 25 
@@ -297,7 +313,7 @@ class OWxpower(XoppyWidget):
         gui.comboBox(box1, self, "EL4_FLAG",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Filter', 'Mirror'],
-                    valueType=int, orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
+                     orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 31 
@@ -346,7 +362,7 @@ class OWxpower(XoppyWidget):
         gui.comboBox(box1, self, "EL5_FLAG",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Filter', 'Mirror'],
-                    valueType=int, orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
+                     orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 37 
@@ -388,7 +404,7 @@ class OWxpower(XoppyWidget):
         gui.comboBox(box1, self, "PLOT_SETS",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Local properties', 'Cumulated intensities', 'All'],
-                    valueType=int, orientation="horizontal", labelWidth=250, callback=self.set_NELEMENTS)
+                     orientation="horizontal", labelWidth=250, callback=self.set_NELEMENTS)
         self.show_at(self.unitFlags()[idx], box1)
 
         #widget index 42
@@ -399,7 +415,7 @@ class OWxpower(XoppyWidget):
         gui.comboBox(box1, self, "FILE_DUMP",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['No', 'Yes (power.spec)'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
         # self.input_spectrum = None
@@ -450,6 +466,7 @@ class OWxpower(XoppyWidget):
     def selectFile(self):
         self.le_source_file.setText(oasysgui.selectFileFromDialog(self, self.SOURCE_FILE, "Open Source File", file_extension_filter="*.*"))
 
+    @Inputs.exchange_data
     def acceptExchangeData(self, exchangeData):
 
         self.input_spectrum = None
@@ -703,26 +720,16 @@ class OWxpower(XoppyWidget):
             material_constants_library = xraylib
             material_constants_library_str = "xraylib"
         else:
-            material_constants_library = DabaxXraylib()
-            material_constants_library_str = 'DabaxXraylib()'
+            material_constants_library = DabaxXraylib(file_f1f2=dabax_f1f2_files()[self.DABAX_F1F2_FILE_INDEX],
+                                                      file_CrossSec=dabax_crosssec_files()[self.DABAX_CROSSSEC_FILE_INDEX])
+            material_constants_library_str = 'DabaxXraylib(file_f1f2="%s",file_CrossSec="%s")' % \
+                                             (dabax_f1f2_files()[self.DABAX_F1F2_FILE_INDEX],
+                                              dabax_crosssec_files()[self.DABAX_CROSSSEC_FILE_INDEX])
             print(material_constants_library.info())
 
-        out_dictionary = xoppy_calc_power(
-            energies,
-            source,
-            substance                  = substance,
-            thick                      = thick    ,
-            angle                      = angle    ,
-            dens                       = dens     ,
-            roughness                  = roughness,
-            flags                      = flags    ,
-            nelements                  = self.NELEMENTS + 1,
-            FILE_DUMP                  = self.FILE_DUMP,
-            material_constants_library = material_constants_library,
-                                                )
-
-        print(out_dictionary["info"])
-
+        #
+        # script
+        #
         dict_parameters = {
             "substance"                 : substance_str,
             "thick"                     : thick_str,
@@ -741,6 +748,25 @@ class OWxpower(XoppyWidget):
 
         self.xoppy_script.set_code(script)
 
+        #
+        # run
+        #
+        out_dictionary = xoppy_calc_power(
+            energies,
+            source,
+            substance                  = substance,
+            thick                      = thick    ,
+            angle                      = angle    ,
+            dens                       = dens     ,
+            roughness                  = roughness,
+            flags                      = flags    ,
+            nelements                  = self.NELEMENTS + 1,
+            FILE_DUMP                  = self.FILE_DUMP,
+            material_constants_library = material_constants_library,
+                                                )
+
+        print(out_dictionary["info"])
+
         return  out_dictionary, script
 
     def script_template(self):
@@ -752,7 +778,8 @@ class OWxpower(XoppyWidget):
 
 import numpy
 from xoppylib.power.xoppy_calc_power import xoppy_calc_power
-import xraylib
+try: import xraylib
+except: print("xraylib not available")
 from dabax.dabax_xraylib import DabaxXraylib
 
 out_dictionary = xoppy_calc_power(
@@ -1009,6 +1036,9 @@ if True:
 
         return logplot
 
+add_widget_parameters_to_module(__name__)
+
+'''
 if __name__ == "__main__":
     import sys
     input_type = 0
@@ -1060,4 +1090,5 @@ if __name__ == "__main__":
         w.show()
         app.exec()
         w.saveSettings()
+'''
 

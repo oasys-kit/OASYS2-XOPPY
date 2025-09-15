@@ -1,13 +1,11 @@
-import sys, os
-import numpy
-import platform
-from PyQt5.QtWidgets import QApplication
+import sys
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui, congruence
-
-from xoppylib.xoppy_util import locations
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
 from xoppylib.xoppy_run_binaries import xoppy_calc_inpro
@@ -39,7 +37,6 @@ class OWxinpro(XoppyWidget):
         super().__init__(show_script_tab=True)
 
     def build_gui(self):
-
         box = oasysgui.widgetBox(self.controlArea, self.name + " Input Parameters", orientation="vertical", width=self.CONTROL_AREA_WIDTH-5)
         
         
@@ -51,7 +48,7 @@ class OWxinpro(XoppyWidget):
         gui.comboBox(box1, self, "CRYSTAL_MATERIAL",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Silicon', 'Germanium', 'Diamond', 'GaAs', 'GaP', 'InAs', 'InP', 'InSb', 'SiC', 'CsF', 'KCl', 'LiF', 'NaCl', 'Graphite', 'Beryllium'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 1 
@@ -60,7 +57,7 @@ class OWxinpro(XoppyWidget):
         gui.comboBox(box1, self, "MODE",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Reflectivity in Bragg case', 'Transmission in Bragg case', 'Reflectivity in Laue case', 'Transmission in Laue case'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 2 
@@ -133,7 +130,7 @@ class OWxinpro(XoppyWidget):
         gui.comboBox(box1, self, "SCALE",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Automatic', 'External'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 11 
@@ -285,81 +282,4 @@ if True:
     def getLogPlot(self):
         return [(False, False), (False, False)]
 
-# def xoppy_calc_xinpro(CRYSTAL_MATERIAL=0,MODE=0,ENERGY=8000.0,MILLER_INDEX_H=1,MILLER_INDEX_K=1,MILLER_INDEX_L=1,\
-#                       ASYMMETRY_ANGLE=0.0,THICKNESS=500.0,TEMPERATURE=300.0,NPOINTS=100,SCALE=0,XFROM=-50.0,XTO=50.0):
-#     print("Inside xoppy_calc_xinpro. ")
-#
-#     try:
-#         with open("xoppy.inp", "wt") as f:
-#             f.write("%s\n"% (os.path.join(locations.home_data(), "inpro" + os.sep)))
-#             if MODE == 0:
-#                 f.write("+1\n")
-#             elif MODE == 1:
-#                 f.write("-1\n")
-#             elif MODE == 2:
-#                 f.write("+2\n")
-#             elif MODE == 3:
-#                 f.write("-1\n")
-#             else:
-#                 f.write("ERROR!!\n")
-#
-#             f.write("%f\n%d\n"%(THICKNESS,CRYSTAL_MATERIAL+1))
-#             f.write("%s\n%f\n"%("EV",ENERGY))
-#             f.write("%d\n%d\n%d\n"%(MILLER_INDEX_H,MILLER_INDEX_K,MILLER_INDEX_L))
-#             f.write("%f\n%f\n%s\n"%(ASYMMETRY_ANGLE,TEMPERATURE, "inpro.dat"))
-#             if SCALE == 0:
-#                 f.write("1\n")
-#             else:
-#                 f.write("%d\n%f\n%f\n"%(2,XFROM,XTO))
-#             f.write("%d\n"%(NPOINTS))
-#
-#
-#         for file in ["inpro.par","inpro.dat","inpro.spec"]:
-#             try:
-#                 os.remove(os.path.join(locations.home_bin_run(),file))
-#             except:
-#                 pass
-#
-#
-#         if platform.system() == "Windows":
-#             command = "\"" + os.path.join(locations.home_bin(),'inpro.exe\" < xoppy.inp')
-#         else:
-#             command = "'" + os.path.join(locations.home_bin(), 'inpro') + "' < xoppy.inp"
-#         print("Running command '%s' in directory: %s "%(command, locations.home_bin_run()))
-#         print("\n--------------------------------------------------------\n")
-#         os.system(command)
-#         print("\n--------------------------------------------------------\n")
-#
-#         #add SPEC header
-#         txt = open("inpro.dat").read()
-#         outFile = "inpro.spec"
-#
-#         f = open(outFile,"w")
-#         f.write("#F inpro.spec\n")
-#         f.write("\n")
-#         f.write("#S 1 inpro results\n")
-#         f.write("#N 3\n")
-#         f.write("#L Theta-TetaB  s-polarized reflectivity  p-polarized reflectivity\n")
-#         f.write(txt)
-#         f.close()
-#         print("File written to disk: inpro.dat, inpro.par, inpro.spec")
-#
-#         #show calculated parameters in standard output
-#         txt_info = open("inpro.par").read()
-#         for line in txt_info:
-#             print(line,end="")
-#
-#
-#         return outFile
-#     except Exception as e:
-#         raise e
-
-
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    w = OWxinpro()
-    w.show()
-    app.exec()
-    w.saveSettings()
+add_widget_parameters_to_module(__name__)

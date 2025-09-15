@@ -358,7 +358,7 @@ class OWyaup(XoppyWidget):
         gui.comboBox(box1, self, "BFIELD_FLAG",
                      label=self.unitLabels()[idx], addSpace=True,
                      items=['from ASCII file', 'from BFIELD preprocessor', 'linear B field'],
-                     valueType=int, orientation="horizontal")
+                      orientation="horizontal")
         self.show_at(self.unitFlags()[idx], box1)
 
 
@@ -406,7 +406,7 @@ class OWyaup(XoppyWidget):
         gui.comboBox(box1, self, "IMAGNET",
                      label=self.unitLabels()[idx], addSpace=True,
                      items=['Nd-Fe-B', 'Sm-Co'],
-                     valueType=int, orientation="horizontal")
+                      orientation="horizontal")
         self.show_at(self.unitFlags()[idx], box1)
 
         # widget index 33
@@ -415,7 +415,7 @@ class OWyaup(XoppyWidget):
         gui.comboBox(box1, self, "ITYPE",
                      label=self.unitLabels()[idx], addSpace=True,
                      items=['planar undulator', 'tapered undulator'],
-                     valueType=int, orientation="horizontal")
+                      orientation="horizontal")
         self.show_at(self.unitFlags()[idx], box1)
 
         # widget index 34
@@ -464,7 +464,7 @@ class OWyaup(XoppyWidget):
         gui.comboBox(box1, self, "I2TYPE",
                      label=self.unitLabels()[idx], addSpace=True,
                      items=['Magnetic field B [Tesla]', 'Deflection parameter K'],
-                     valueType=int, orientation="horizontal")
+                      orientation="horizontal")
         self.show_at(self.unitFlags()[idx], box1)
 
         # widget index 39

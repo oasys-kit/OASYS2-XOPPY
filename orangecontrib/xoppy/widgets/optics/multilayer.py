@@ -3,16 +3,23 @@ from PyQt5.QtWidgets import QMessageBox
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui, congruence
-from oasys.widgets.exchange import DataExchangeObject
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
-from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
+from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget_dabax import XoppyWidgetDabax
 
 from xoppylib.mlayer import MLayer
 from xoppylib.xoppy_xraylib_util import density
-from xoppylib.xoppy_xraylib_util import Refractive_Index_Re_Extended_NIST, Refractive_Index_Im_Extended_NIST
 
-class OWMlultilayer(XoppyWidget):
+try: import xraylib
+except: print("xraylib not available")
+
+from dabax.dabax_xraylib import DabaxXraylib
+from dabax.dabax_files import dabax_f1f2_files, dabax_crosssec_files
+
+class OWMlultilayer(XoppyWidgetDabax):
     name = "Multilayer"
     id = "orange.widgets.datamlayer"
     description = "Multilayer Reflectivity"
@@ -20,7 +27,6 @@ class OWMlultilayer(XoppyWidget):
     priority = 11
     category = ""
     keywords = ["xoppy", "multilayer"]
-
 
     MATERIAL_S = Setting("Si")
     DENSITY_S = Setting("?")
@@ -55,10 +61,24 @@ class OWMlultilayer(XoppyWidget):
     def __init__(self):
         super().__init__(show_script_tab=True)
 
+    def dabax_show_f1f2(self):
+        return True
+
+    def dabax_show_crosssec(self):
+        return True
+
+
+
     def build_gui(self):
 
-        box0 = oasysgui.widgetBox(self.controlArea, self.name + " Input Parameters", orientation="vertical", width=self.CONTROL_AREA_WIDTH-5)
-        
+        # box0 = oasysgui.widgetBox(self.controlArea, self.name + " Input Parameters", orientation="vertical", width=self.CONTROL_AREA_WIDTH-5)
+        ###########
+        tabs_setting = oasysgui.tabWidget(self.controlArea)
+        tabs_setting.setFixedWidth(self.CONTROL_AREA_WIDTH-5)
+        box0 = oasysgui.createTabPage(tabs_setting, self.name + " Input Parameters")
+        self.tab_dabax = oasysgui.createTabPage(tabs_setting, "Materials Library")
+        ###########
+
         idx = -1 
 
         #
@@ -165,8 +185,7 @@ class OWMlultilayer(XoppyWidget):
         idx += 1
         box1 = gui.widgetBox(box)
         oasysgui.lineEdit(box1, self, "NLAYERS",
-                    valueType=int,
-                    label=self.unitLabels()[idx], addSpace=False, orientation="horizontal", labelWidth=250)
+                    valueType=int, label=self.unitLabels()[idx], addSpace=False, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
         #
@@ -179,7 +198,7 @@ class OWMlultilayer(XoppyWidget):
         gui.comboBox(box1, self, "THETA_FLAG",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Single Value', 'Scan'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
         # widget index 13
@@ -216,7 +235,7 @@ class OWMlultilayer(XoppyWidget):
         gui.comboBox(box1, self, "ENERGY_FLAG",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Single Value', 'Scan'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                    orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
         # widget index 17
@@ -337,7 +356,6 @@ class OWMlultilayer(XoppyWidget):
         self.MATERIAL_E = congruence.checkEmptyString(self.MATERIAL_E, "Substrate")
         self.MATERIAL_O = congruence.checkEmptyString(self.MATERIAL_O, "Substrate")
 
-
         self.ENERGY = congruence.checkStrictlyPositiveNumber(self.ENERGY, "Photon energy")
         self.THETA = congruence.checkPositiveNumber(self.THETA, "Grazing angle")
 
@@ -359,34 +377,31 @@ class OWMlultilayer(XoppyWidget):
 
 
     def do_xoppy_calculation(self):
+        if self.MATERIAL_CONSTANT_LIBRARY_FLAG == 0:
+            dabax = None
+            material_constants_library_str = "None"
+        else:
+            dabax = DabaxXraylib(file_f1f2=dabax_f1f2_files()[self.DABAX_F1F2_FILE_INDEX],
+                                                      file_CrossSec=dabax_crosssec_files()[self.DABAX_CROSSSEC_FILE_INDEX])
+            material_constants_library_str = 'DabaxXraylib(file_f1f2="%s",file_CrossSec="%s")' % \
+                                             (dabax_f1f2_files()[self.DABAX_F1F2_FILE_INDEX],
+                                              dabax_crosssec_files()[self.DABAX_CROSSSEC_FILE_INDEX])
+            print(dabax.info())
 
-        # density_S = self.DENSITY_S
-        # density_E = self.DENSITY_E
-        # density_O = self.DENSITY_O
-        #
-        # if density_S == "?": density_S = None
-        # if density_E == "?": density_E = None
-        # if density_O == "?": density_O = None
+        try:    density_S = float(self.DENSITY_S)
+        except: density_S = density(self.MATERIAL_S, material_constants_library=dabax)
 
-        try:
-            density_S = float(self.DENSITY_S)
-        except:
-            density_S = density(self.MATERIAL_S)
+        try:    density_E = float(self.DENSITY_E)
+        except: density_E = density(self.MATERIAL_E, material_constants_library=dabax)
 
-        try:
-            density_E = float(self.DENSITY_E)
-        except:
-            density_E = density(self.MATERIAL_E)
-
-        try:
-            density_O = float(self.DENSITY_O)
-        except:
-            density_O = density(self.MATERIAL_O)
+        try:    density_O = float(self.DENSITY_O)
+        except: density_O = density(self.MATERIAL_O, material_constants_library=dabax)
 
         print("Using density:\n  substrate(%s): %f\n  even(%s): %f\n  odd(%s): %f" %
               (self.MATERIAL_S, density_S,
                self.MATERIAL_E, density_E,
                self.MATERIAL_O, density_O, ))
+
 
         out = MLayer.initialize_from_bilayer_stack(
             material_S=self.MATERIAL_S, density_S=density_S, roughness_S=self.ROUGHNESS_S,  # 2.33
@@ -395,6 +410,8 @@ class OWMlultilayer(XoppyWidget):
             bilayer_pairs=self.NLAYERS,
             bilayer_thickness=self.THICKNESS,
             bilayer_gamma=self.GAMMA,
+            use_xraylib_or_dabax=self.MATERIAL_CONSTANT_LIBRARY_FLAG,
+            dabax=dabax,
         )
 
         for key in out.pre_mlayer_dict.keys():
@@ -458,6 +475,8 @@ class OWMlultilayer(XoppyWidget):
             "theta2":            self.THETA_END,
             "myscan":            myscan,
             "h5file":            h5file,
+            "use_xraylib_or_dabax" : self.MATERIAL_CONSTANT_LIBRARY_FLAG,
+            "dabax_str"            : material_constants_library_str,
             }
         # write python script
         self.xoppy_script.set_code(self.script_template().format_map(dict_parameters))
@@ -533,6 +552,9 @@ class OWMlultilayer(XoppyWidget):
 
     def script_template(self):
         return """
+try: import xraylib
+except: print("xraylib not available")
+from dabax.dabax_xraylib import DabaxXraylib
 from xoppylib.mlayer import MLayer
 
 out = MLayer.initialize_from_bilayer_stack(
@@ -542,6 +564,8 @@ out = MLayer.initialize_from_bilayer_stack(
     bilayer_pairs={bilayer_pairs},
     bilayer_thickness={bilayer_thickness},
     bilayer_gamma={bilayer_gamma},
+    use_xraylib_or_dabax = {use_xraylib_or_dabax},
+    dabax={dabax_str},
 )
 
 for key in out.pre_mlayer_dict.keys():
@@ -661,11 +685,4 @@ if True:
         return 'multilayer'
 
 
-if __name__ == "__main__":
-    import sys
-    from PyQt5.QtWidgets import QApplication
-    app = QApplication(sys.argv)
-    w = OWMlultilayer()
-    w.show()
-    app.exec()
-    w.saveSettings()
+add_widget_parameters_to_module(__name__)

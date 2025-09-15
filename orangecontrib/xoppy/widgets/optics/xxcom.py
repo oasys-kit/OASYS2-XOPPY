@@ -1,11 +1,11 @@
-import platform
 from PyQt5.QtWidgets import QApplication
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui, congruence
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
-from xoppylib.xoppy_util import locations
 from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
 from xoppylib.xoppy_run_binaries import xoppy_calc_xcom
 
@@ -49,7 +49,7 @@ class OWxxcom(XoppyWidget):
         gui.comboBox(box1, self, "SUBSTANCE",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Element (Atomic number)', 'Element (Symbol)', 'Compound (Formula)', 'Mixture (F1:F2:F3...)'],
-                    valueType=int, orientation="horizontal", callback=self.set_SUBSTANCE)
+                     orientation="horizontal", callback=self.set_SUBSTANCE)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 2 
@@ -72,7 +72,7 @@ class OWxxcom(XoppyWidget):
         gui.comboBox(box1, self, "GRID",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Standard', 'Standard+points', 'Points only'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 5 
@@ -81,7 +81,7 @@ class OWxxcom(XoppyWidget):
         gui.comboBox(box1, self, "GRIDINPUT",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['From Keyboard', 'From file'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 6 
@@ -97,7 +97,7 @@ class OWxxcom(XoppyWidget):
         gui.comboBox(box1, self, "ELEMENTOUTPUT",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Cross section [b/atom]', 'Cross section [b/atom] & Attenuation coeff [cm2/g]', 'Partial interaction coeff & Attenuation coeff [cm2/g]'],
-                    valueType=int, orientation="horizontal", callback=self.set_ELEMENTOUTPUT)
+                     orientation="horizontal", callback=self.set_ELEMENTOUTPUT)
         self.show_at(self.unitFlags()[idx], box1) 
 
         gui.rubber(self.controlArea)
@@ -267,10 +267,4 @@ if True:
         return [(True, True), (True, True), (True, True), (True, True), (True, True), (True, True), (True, True)]
 
 
-if __name__ == "__main__":
-    import sys
-    app = QApplication(sys.argv)
-    w = OWxxcom()
-    w.show()
-    app.exec()
-    w.saveSettings()
+add_widget_parameters_to_module(__name__)

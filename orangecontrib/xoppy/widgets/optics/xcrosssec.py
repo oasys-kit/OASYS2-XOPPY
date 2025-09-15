@@ -3,19 +3,23 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets import gui as oasysgui, congruence
-from oasys.widgets.exchange import DataExchangeObject
 
-from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
+
+from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget_dabax import XoppyWidgetDabax
 
 from xoppylib.scattering_functions.xoppy_calc_crosssec import xoppy_calc_crosssec
+
+try: import xraylib
+except: print("xraylib not available")
+
+from dabax.dabax_xraylib import DabaxXraylib
 from dabax.dabax_files import dabax_crosssec_files
 
-import xraylib
-from dabax.dabax_xraylib import DabaxXraylib
-
-
-class OWxcrosssec(XoppyWidget):
+class OWxcrosssec(XoppyWidgetDabax):
     name = "CrossSec"
     id = "orange.widgets.dataxcrosssec"
     description = "X-ray Matter Cross Sections"
@@ -23,7 +27,6 @@ class OWxcrosssec(XoppyWidget):
     priority = 19
     category = ""
     keywords = ["xoppy", "xcrosssec"]
-
 
     DESCRIPTOR   = Setting("Si")
     DENSITY      = Setting("?")
@@ -38,18 +41,23 @@ class OWxcrosssec(XoppyWidget):
     DUMP_TO_FILE = Setting(0)  # No
     FILE_NAME    = Setting("CrossSec.dat")
 
-    MATERIAL_CONSTANT_LIBRARY_FLAG = Setting(0)
-    DABAX_CROSSSEC_FILE_INDEX = Setting(0)
-
     xtitle = None
     ytitle = None
 
     def __init__(self):
         super().__init__(show_script_tab=True)
 
+    def dabax_show_crosssec(self):
+        return True
+
     def build_gui(self):
 
-        box = oasysgui.widgetBox(self.controlArea, self.name + " Input Parameters", orientation="vertical", width=self.CONTROL_AREA_WIDTH-5)
+        ###########
+        tabs_setting = oasysgui.tabWidget(self.controlArea)
+        tabs_setting.setFixedWidth(self.CONTROL_AREA_WIDTH-5)
+        box = oasysgui.createTabPage(tabs_setting, self.name + " Input Parameters")
+        self.tab_dabax = oasysgui.createTabPage(tabs_setting, "Materials Library")
+        ###########
 
         idx = -1
         
@@ -59,17 +67,17 @@ class OWxcrosssec(XoppyWidget):
         gui.comboBox(box1, self, "MAT_FLAG",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Element(formula)', 'Compound(formula)', 'Compound(table)'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 2 
         idx += 1 
         box1 = gui.widgetBox(box)
-        items = xraylib.GetCompoundDataNISTList()
+        items = DabaxXraylib().GetCompoundDataNISTList()
         gui.comboBox(box1, self, "MAT_LIST",
                      label=self.unitLabels()[idx], addSpace=False,
                      items=items,
-                     valueType=int, orientation="horizontal", labelWidth=250)
+                      orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 3 
@@ -93,7 +101,7 @@ class OWxcrosssec(XoppyWidget):
         gui.comboBox(box1, self, "CALCULATE",
                      label=self.unitLabels()[idx], addSpace=False,
                      items=['Total','PhotoElectric','Rayleigh','Compton','Total-Rayleigh'],
-                     valueType=int, orientation="horizontal", labelWidth=250)
+                      orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
         
         #widget index 6 
@@ -102,7 +110,7 @@ class OWxcrosssec(XoppyWidget):
         gui.comboBox(box1, self, "GRID",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Standard', 'User defined', 'Single Value'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 7 
@@ -135,7 +143,7 @@ class OWxcrosssec(XoppyWidget):
         gui.comboBox(box1, self, "UNIT",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['barn/atom [Cross Section] *see help*', 'cm^2 [Cross Section] *see help*', 'cm^2/g [Mass abs coef]', 'cm^-1 [Linear abs coef]'],
-                    valueType=int, orientation="horizontal", labelWidth=130)
+                    orientation="horizontal", labelWidth=130)
         self.show_at(self.unitFlags()[idx], box1) 
 
         # widget index 11
@@ -154,32 +162,6 @@ class OWxcrosssec(XoppyWidget):
                      label=self.unitLabels()[idx], addSpace=True)
         self.show_at(self.unitFlags()[idx], box1)
 
-        #
-        #
-        #
-
-        box = oasysgui.widgetBox(self.controlArea, self.name + " Material Library", orientation="vertical", width=self.CONTROL_AREA_WIDTH-5)
-
-
-        # widget index 13
-        idx += 1
-        box1 = gui.widgetBox(box)
-        gui.comboBox(box1, self, "MATERIAL_CONSTANT_LIBRARY_FLAG",
-                     label=self.unitLabels()[idx], addSpace=True,
-                     items=["xraylib [default]", "dabax"],
-                     orientation="horizontal")
-        self.show_at(self.unitFlags()[idx], box1)
-
-        # widget index 14
-        idx += 1
-        box1 = gui.widgetBox(box)
-        gui.comboBox(box1, self, "DABAX_CROSSSEC_FILE_INDEX",
-                     label=self.unitLabels()[idx], addSpace=True,
-                     items=dabax_crosssec_files(),
-                     orientation="horizontal")
-        self.show_at(self.unitFlags()[idx], box1)
-
-
         gui.rubber(self.controlArea)
 
     def unitLabels(self):
@@ -187,7 +169,6 @@ class OWxcrosssec(XoppyWidget):
                  'Cross section','Energy [eV] grid:',
                  'Starting Energy [eV]: ','To: ','Number of points','Units',
                  'Dump to file','File name',
-                 'Material Library','dabax crosssec file',
                  ]
 
     def unitFlags(self):
@@ -195,8 +176,6 @@ class OWxcrosssec(XoppyWidget):
                  'True','True',
                  'self.GRID  !=  0','self.GRID  ==  1','self.GRID  ==  1','True',
                  'True','self.DUMP_TO_FILE == 1',
-                 'True',
-                 'self.MATERIAL_CONSTANT_LIBRARY_FLAG == 1',
                  ]
 
     def get_help_name(self):
@@ -250,26 +229,9 @@ class OWxcrosssec(XoppyWidget):
         print("using descriptor = %s" % descriptor)
         print("using density = %g g/cm3" % density)
 
-
-
-        out_dict = xoppy_calc_crosssec(
-                descriptor                 = descriptor  ,
-                density                    = density     ,
-                MAT_FLAG                   = self.MAT_FLAG ,
-                CALCULATE                  = self.CALCULATE,
-                GRID                       = self.GRID     ,
-                GRIDSTART                  = self.GRIDSTART,
-                GRIDEND                    = self.GRIDEND  ,
-                GRIDN                      = self.GRIDN    ,
-                UNIT                       = self.UNIT     ,
-                DUMP_TO_FILE               = self.DUMP_TO_FILE,
-                FILE_NAME                  = self.FILE_NAME   ,
-                material_constants_library = material_constants_library,
-        )
-
-        if "info" in out_dict.keys():
-            print(out_dict["info"])
-
+        #
+        # script
+        #
         dict_parameters = {
                 "descriptor"                 : descriptor  ,
                 "density"                    : density     ,
@@ -288,6 +250,28 @@ class OWxcrosssec(XoppyWidget):
         script = self.script_template().format_map(dict_parameters)
 
         self.xoppy_script.set_code(script)
+
+        #
+        # run
+        #
+        out_dict = xoppy_calc_crosssec(
+                descriptor                 = descriptor  ,
+                density                    = density     ,
+                MAT_FLAG                   = self.MAT_FLAG ,
+                CALCULATE                  = self.CALCULATE,
+                GRID                       = self.GRID     ,
+                GRIDSTART                  = self.GRIDSTART,
+                GRIDEND                    = self.GRIDEND  ,
+                GRIDN                      = self.GRIDN    ,
+                UNIT                       = self.UNIT     ,
+                DUMP_TO_FILE               = self.DUMP_TO_FILE,
+                FILE_NAME                  = self.FILE_NAME   ,
+                material_constants_library = material_constants_library,
+        )
+
+        if "info" in out_dict.keys():
+            print(out_dict["info"])
+
         return out_dict
 
     def script_template(self):
@@ -296,7 +280,8 @@ class OWxcrosssec(XoppyWidget):
 # script to make the calculations (created by XOPPY:crosssec)
 #
 from xoppylib.scattering_functions.xoppy_calc_crosssec import xoppy_calc_crosssec
-import xraylib
+try: import xraylib
+except: print("xraylib not available")
 from dabax.dabax_xraylib import DabaxXraylib
 
 out_dict =  xoppy_calc_crosssec(
@@ -412,9 +397,4 @@ if True:
     def getLogPlot(self):
         return[(True, True)]
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    w = OWxcrosssec()
-    w.show()
-    app.exec()
-    w.saveSettings()
+add_widget_parameters_to_module(__name__)

@@ -5,17 +5,20 @@ import numpy
 
 import scipy.constants as codata
 
-from PyQt5.QtWidgets import QApplication, QMessageBox, QSizePolicy
+from PyQt5.QtWidgets import QMessageBox, QSizePolicy
 
 from orangewidget import gui
 from orangewidget.settings import Setting
 
-from oasys.widgets import gui as oasysgui, congruence
-from oasys.widgets.exchange import DataExchangeObject
-from oasys.widgets.gui import ConfirmDialog
-from oasys.util.oasys_objects import OasysSurfaceData
+from orangewidget.widget import MultiInput, Input
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.gui import ConfirmDialog
+from oasys2.widget.util import congruence
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.widget.util.widget_objects import OasysSurfaceData
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
-from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
+from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget_dabax import XoppyWidgetDabax
 
 from xoppylib.power.power3d import integral_2d, integral_3d, info_total_power
 from xoppylib.power.power3d import calculate_component_absorbance_and_transmittance, apply_transmittance_to_incident_beam
@@ -28,7 +31,13 @@ from syned.beamline.optical_elements.mirrors.mirror import Mirror
 from syned.beamline.beamline import Beamline
 from syned.beamline.shape import Rectangle
 
-class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
+try: import xraylib
+except: print("xraylib not available")
+
+from dabax.dabax_xraylib import DabaxXraylib
+from dabax.dabax_files import dabax_f1f2_files, dabax_crosssec_files
+
+class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
     name = "Power3Dcomponent"
     id = "orange.widgets.datapower3D"
     description = "Power (vs Energy and spatial coordinates) Absorbed and Transmitted or Reflected by Optical Elements"
@@ -37,16 +46,11 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
     category = ""
     keywords = ["xoppy", "Undulator Radiation", "power3Dcomponent"]
 
-    inputs = [{"name": "xoppy_data",
-               "type": DataExchangeObject,
-               "handler": "acceptExchangeData" },
-              {"name": "ExchangeData",
-               "type": DataExchangeObject,
-               "handler": "acceptExchangeData" },
-              WidgetDecorator.syned_input_data()[0],
-              ("Surface Data 1", OasysSurfaceData, "set_input_surface_data_front"),
-              ("Surface Data 2", OasysSurfaceData, "set_input_surface_data_back")]
-
+    class Inputs:
+        exchange_data      = MultiInput("ExchangeData", DataExchangeObject, default=True, auto_summary=False)
+        syned_data         = WidgetDecorator.syned_input_data(multi_input=True)
+        surface_data_front = MultiInput("Surface Data Front", OasysSurfaceData, default=True, auto_summary=False)
+        surface_data_back  = MultiInput("Surface Data Back", OasysSurfaceData, default=True, auto_summary=False)
 
     INPUT_BEAM_FROM = Setting(0)
     INPUT_BEAM_FILE = Setting("undulator_radiation.h5")
@@ -90,17 +94,24 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
     def __init__(self):
         super().__init__(show_script_tab=True)
 
+    def dabax_show_f1f2(self):
+        return True
+
+    def dabax_show_crosssec(self):
+        return True
+
     def build_gui(self):
 
-        self.leftWidgetPart.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
-        self.leftWidgetPart.setMaximumWidth(self.CONTROL_AREA_WIDTH + 20)
-        self.leftWidgetPart.updateGeometry()
+        self.left_side.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
+        self.left_side.setMaximumWidth(self.CONTROL_AREA_WIDTH + 20)
+        self.left_side.updateGeometry()
 
         ###########
         tabs_setting = oasysgui.tabWidget(self.controlArea)
         tabs_setting.setFixedWidth(self.CONTROL_AREA_WIDTH-5)
         tab_1 = oasysgui.createTabPage(tabs_setting, "Input Parameters")
         tab_2 = oasysgui.createTabPage(tabs_setting, "Send Settings")
+        self.tab_dabax = oasysgui.createTabPage(tabs_setting, "Materials Library")
         ###########
 
         box = oasysgui.widgetBox(tab_1, self.name + " Input Parameters", orientation="vertical",width=self.CONTROL_AREA_WIDTH-10)
@@ -114,7 +125,7 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
         gui.comboBox(box1, self, "INPUT_BEAM_FROM",
                     label=self.unitLabels()[idx], addSpace=False,
                     items=['Oasys wire','h5 file (from undulator_radiation)'],
-                    valueType=int, orientation="horizontal", callback=self.visibility_input_file, labelWidth=250)
+                     orientation="horizontal", callback=self.visibility_input_file, labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
         #widget index 12 ***********   File Browser ******************
@@ -134,7 +145,7 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
         gui.comboBox(box1, self, "EL1_FLAG",
                     label=self.unitLabels()[idx], addSpace=False,
                     items=['Filter', 'Mirror','Aperture','Magnifier','Screen Rotation',"Thin object filter","Multilayer","Reflectivity from file"],
-                    valueType=int, orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
+                     orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
         #widget index 11
@@ -161,19 +172,19 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
                              label=self.unitLabels()[idx], addSpace=False,
                              items=['Horizontal',
                                     'Vertical'],
-                             valueType=int, orientation="horizontal", labelWidth=250)
+                              orientation="horizontal", labelWidth=250)
             elif el == "EL1_GAPSHAPE":
                 gui.comboBox(box1, self, el,
                              label=self.unitLabels()[idx], addSpace=False,
                              items=['Rectangle',
                                     'Ellipse'],
-                             valueType=int, orientation="horizontal", labelWidth=250)
+                              orientation="horizontal", labelWidth=250)
             elif el == "thin_object_back_profile_flag":
                 gui.comboBox(box1, self, el,
                              label=self.unitLabels()[idx], addSpace=False,
                              items=['zero',
                                     'from h5 file'],
-                             valueType=int, orientation="horizontal", labelWidth=250)
+                              orientation="horizontal", labelWidth=250)
             elif el in ["EL1_DEN", "thin_object_file", "thin_object_back_profile_file"]:
                 oasysgui.lineEdit(box1, self, el,
                                   label=self.unitLabels()[idx], addSpace=False,
@@ -205,7 +216,7 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
                            'Element transmittance and absorbance',
                            'Absorbed by element',
                            'Transmitted/reflected by element'],
-                    valueType=int, orientation="horizontal", labelWidth=100, callback=self.replot_results)
+                     orientation="horizontal", labelWidth=100, callback=self.replot_results)
         self.show_at(self.unitFlags()[idx], box1)
 
         ##
@@ -219,7 +230,7 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
         gui.comboBox(box1, self, "FILE_INPUT_FLAG",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['No', 'Yes (hdf5)'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                    orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
         #widget index xx
@@ -243,7 +254,7 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
         gui.comboBox(box1, self, "FILE_DUMP",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['No', 'Yes (hdf5)','Yes (x,y,absorption)', 'Yes (absorption matrix)'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                    orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
         #widget index xx
@@ -266,7 +277,7 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
                      label=self.unitLabels()[idx], addSpace=False,
                      items=['No',
                             'Yes'],
-                     valueType=int, orientation="horizontal", labelWidth=250)
+                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
         #widget index XX
@@ -277,7 +288,7 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
                      label=self.unitLabels()[idx], addSpace=False,
                      items=['No',
                             'Yes'],
-                     valueType=int, orientation="horizontal", labelWidth=250)
+                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
         #widget index XX
@@ -383,6 +394,19 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
     def get_help_name(self):
         return 'power3dcomponent'
 
+
+    @Inputs.surface_data_front
+    def set_surface_data_front(self, index, surface_data_front):
+        self.set_input_surface_data_front(surface_data_front)
+
+    @Inputs.surface_data_front.insert
+    def insert_surface_data_front(self, index, surface_data_front):
+        self.set_input_surface_data_front(surface_data_front)
+
+    @Inputs.surface_data_front.remove
+    def remove_surface_data_front(self, index):
+        pass
+
     def set_input_surface_data_front(self, surface_data):
         if isinstance(surface_data, OasysSurfaceData):
             self.EL1_FLAG = 5
@@ -390,6 +414,18 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
             self.thin_object_thickness_outside_file_area = 0.0
         else:
             raise Exception("Wrong surface_data")
+
+    @Inputs.surface_data_back
+    def set_surface_data_back(self, index, surface_data_back):
+        self.set_input_surface_data_back(surface_data_back)
+
+    @Inputs.surface_data_back.insert
+    def insert_surface_data_back(self, index, surface_data_back):
+        self.set_input_surface_data_back(surface_data_back)
+
+    @Inputs.surface_data_back.remove
+    def remove_surface_data_back(self, index):
+        pass
 
     def set_input_surface_data_back(self, surface_data):
         if isinstance(surface_data, OasysSurfaceData):
@@ -399,6 +435,18 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
         else:
             raise Exception("Wrong surface_data")
 
+    @Inputs.exchange_data
+    def set_exchange_data(self, index, exchange_data):
+        self.acceptExchangeData(exchange_data)
+
+    @Inputs.exchange_data.insert
+    def insert_exchange_data(self, index, exchange_data):
+        self.acceptExchangeData(exchange_data)
+
+    @Inputs.exchange_data.remove
+    def remove_exchange_data(self, index):
+        pass
+    
     def acceptExchangeData(self, exchangeData):
         try:
             if not exchangeData is None:
@@ -607,6 +655,20 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
             external_reflectivity_file = self.external_reflectivity_file
 
         #
+        # dabax stuff
+        #
+        if self.MATERIAL_CONSTANT_LIBRARY_FLAG == 0:
+            material_constants_library = xraylib
+            material_constants_library_str = "xraylib"
+        else:
+            material_constants_library = DabaxXraylib(file_f1f2=dabax_f1f2_files()[self.DABAX_F1F2_FILE_INDEX],
+                                                      file_CrossSec=dabax_crosssec_files()[self.DABAX_CROSSSEC_FILE_INDEX])
+            material_constants_library_str = 'DabaxXraylib(file_f1f2="%s",file_CrossSec="%s")' % \
+                                             (dabax_f1f2_files()[self.DABAX_F1F2_FILE_INDEX],
+                                              dabax_crosssec_files()[self.DABAX_CROSSSEC_FILE_INDEX])
+            print(material_constants_library.info())
+
+        #
         # write python script
         #
         if isinstance(self.EL1_DEN, str):
@@ -650,6 +712,7 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
                 "thin_object_back_profile_file": thin_object_back_profile_file,
                 "multilayer_file":  multilayer_file,
                 "external_reflectivity_file": external_reflectivity_file,
+                "material_constants_library": material_constants_library_str,
             }
 
         if self.input_beam is not None:
@@ -689,6 +752,7 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
                                   thin_object_back_profile_file=thin_object_back_profile_file,
                                   multilayer_file=multilayer_file,
                                   external_reflectivity_file=external_reflectivity_file,
+                                  material_constants_library=material_constants_library,
                                   )
 
         txt += info_total_power(p0, e0, v0, h0, transmittance, absorbance, EL1_FLAG=self.EL1_FLAG)
@@ -720,6 +784,9 @@ class OWpower3Dcomponent(XoppyWidget, WidgetDecorator):
 #
 
 import numpy
+try: import xraylib
+except: print("xraylib not available")
+from dabax.dabax_xraylib import DabaxXraylib
 from xoppylib.power.power3d import calculate_component_absorbance_and_transmittance
 from xoppylib.power.power3d import apply_transmittance_to_incident_beam
 
@@ -750,6 +817,7 @@ transmittance, absorbance, E, H, V, txt = calculate_component_absorbance_and_tra
                 thin_object_back_profile_file='{thin_object_back_profile_file}',
                 multilayer_file='{multilayer_file}',
                 external_reflectivity_file='{external_reflectivity_file}',
+                material_constants_library = {material_constants_library},
                 )
 
 # apply transmittance to incident beam 
@@ -1058,6 +1126,18 @@ if True:
             except:
                 pass
 
+    @Inputs.syned_data
+    def set_syned_data(self, index, syned_data):
+        self.receive_syned_data(syned_data)
+
+    @Inputs.syned_data.insert
+    def insert_syned_data(self, index, syned_data):
+        self.receive_syned_data(syned_data)
+
+    @Inputs.syned_data.remove
+    def remove_syned_data(self, index):
+        pass
+
     def receive_syned_data(self, data):
         if not data is None:
             if isinstance(data, Beamline):
@@ -1094,7 +1174,9 @@ if True:
             else:
                 raise ValueError("Syned data not correct")
 
+add_widget_parameters_to_module(__name__)
 
+'''
 if __name__ == "__main__":
 
     # # create unulator_radiation xoppy exchange data
@@ -1184,3 +1266,4 @@ if __name__ == "__main__":
     w.show()
     app.exec()
     w.saveSettings()
+'''

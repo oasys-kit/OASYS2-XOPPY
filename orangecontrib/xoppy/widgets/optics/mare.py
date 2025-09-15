@@ -1,16 +1,28 @@
+from PyQt5.QtWidgets import QSizePolicy
+
 from orangewidget import gui
 from orangewidget.settings import Setting
 
-from oasys.widgets import gui as oasysgui, congruence
-from oasys.widgets.exchange import DataExchangeObject
+from oasys2.widget import gui as oasysgui
+from oasys2.widget.util import congruence
+from oasys2.widget.util.exchange import DataExchangeObject
+from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
-from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
+from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget_dabax import XoppyWidgetDabax
 from orangecontrib.xoppy.util.python_script import PythonScript
 
 from xoppylib.crystals.mare_calc import mare_calc
-from xraylib import Crystal_GetCrystalsList
 
-class OWmare(XoppyWidget):
+try: import xraylib
+except: print("xraylib not available")
+
+from dabax.dabax_xraylib import DabaxXraylib
+from dabax.dabax_files import dabax_f1f2_files, dabax_crosssec_files
+
+def Crystal_GetCrystalsList():
+    return DabaxXraylib().Crystal_GetCrystalsList()
+
+class OWmare(XoppyWidgetDabax):
     name = "MARE"
     id = "orange.widgets.datamare"
     description = "Crystal Multiple Diffraction"
@@ -36,10 +48,16 @@ class OWmare(XoppyWidget):
     number_of_scripts = 0
 
     def build_gui(self):
+        self.left_side.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
+        self.left_side.setMaximumWidth(self.CONTROL_AREA_WIDTH + 20)
+        self.left_side.updateGeometry()
 
-        box = oasysgui.widgetBox(self.controlArea, self.name + " Input Parameters", orientation="vertical", width=self.CONTROL_AREA_WIDTH-5)
+        tabs_setting = oasysgui.tabWidget(self.controlArea)
+        tabs_setting.setFixedWidth(self.CONTROL_AREA_WIDTH-5)
+        box = oasysgui.createTabPage(tabs_setting, self.name + " Input Parameters")
+        self.tab_dabax = oasysgui.createTabPage(tabs_setting, "Materials Library")
 
-        idx = -1 
+        idx = -1
         
         #widget index 0 
         idx += 1 
@@ -47,7 +65,7 @@ class OWmare(XoppyWidget):
         gui.comboBox(box1, self, "CRYSTAL",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=Crystal_GetCrystalsList(),
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                    orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 1 
@@ -112,7 +130,7 @@ class OWmare(XoppyWidget):
         gui.comboBox(box1, self, "DISPLAY",
                      label=self.unitLabels()[idx], addSpace=False,
                     items=['Spaghetti', 'Spaghetti+Umweg', 'Spaghetti+Glitches', 'All'],
-                    valueType=int, orientation="horizontal", labelWidth=250)
+                    orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
         
         #widget index 9 
@@ -179,13 +197,19 @@ class OWmare(XoppyWidget):
     def do_xoppy_calculation(self):
         descriptor = Crystal_GetCrystalsList()[self.CRYSTAL]
 
+        if self.MATERIAL_CONSTANT_LIBRARY_FLAG == 0:
+            material_constants_library = xraylib
+        else:
+            material_constants_library = DabaxXraylib(file_f1f2=dabax_f1f2_files()[self.DABAX_F1F2_FILE_INDEX],
+                                                      file_CrossSec=dabax_crosssec_files()[self.DABAX_CROSSSEC_FILE_INDEX])
+
         # Note that the output is a list of python scripts.
         # TODO: see how to send a script. TO be sent to the "python script" widget?
         # For the moment, this widget does not send anything!!
 
         list_of_scripts = mare_calc(descriptor,self.H,self.K,self.L,
                                                self.HMAX,self.KMAX,self.LMAX,self.FHEDGE,self.DISPLAY,
-                                               self.LAMBDA,self.DELTALAMBDA,self.PHI,self.DELTAPHI)
+                                               self.LAMBDA,self.DELTALAMBDA,self.PHI,self.DELTAPHI, material_constants_library)
 
 
         self.number_of_scripts = len(list_of_scripts)
@@ -266,22 +290,4 @@ class OWmare(XoppyWidget):
         self.progressBarSet(progressBarValue)
 
 
-if __name__ == "__main__":
-    import sys
-    from PyQt5.QtWidgets import QApplication
-
-    app = QApplication(sys.argv)
-    w = OWmare()
-    w.show()
-    app.exec()
-    w.saveSettings()
-
-    # list_of_scripts = mare_calc("Si2",2,2,2,3,3,3,2e-8,3,1.54,0.01,-20.0,0.1)
-    # for script in list_of_scripts:
-    #     exec(script)
-
-    # app = QApplication(sys.argv)
-    # w = PythonWidget(None)
-    # w.setText("import numpy\nprint(numpy.arange(10))")
-    # w.show()
-    # app.exec()
+add_widget_parameters_to_module(__name__)

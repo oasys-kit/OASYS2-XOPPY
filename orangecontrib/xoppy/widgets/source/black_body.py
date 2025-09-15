@@ -1,6 +1,3 @@
-import sys
-from PyQt5.QtWidgets import QApplication
-
 from orangewidget import gui
 from orangewidget.settings import Setting
 from oasys2.widget import gui as oasysgui
