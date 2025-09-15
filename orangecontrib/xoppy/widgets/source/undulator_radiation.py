@@ -814,9 +814,9 @@ if True:
 
 add_widget_parameters_to_module(__name__)
 
-from orangewidget.utils.widgetpreview import WidgetPreview
-
 if __name__ == "__main__":
+    from orangewidget.utils.widgetpreview import WidgetPreview
+
     bl = None
 
     LOAD_REMOTE_BEAMLINE = False
