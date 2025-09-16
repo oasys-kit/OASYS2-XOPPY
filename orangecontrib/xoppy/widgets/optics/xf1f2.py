@@ -12,7 +12,7 @@ from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget_dabax import XoppyWidgetDab
 from xoppylib.scattering_functions.xoppy_calc_f1f2 import xoppy_calc_f1f2
 
 try: import xraylib
-except: print("xraylib not available")
+except: pass
 
 from dabax.dabax_xraylib import DabaxXraylib
 from dabax.dabax_files import dabax_f1f2_files

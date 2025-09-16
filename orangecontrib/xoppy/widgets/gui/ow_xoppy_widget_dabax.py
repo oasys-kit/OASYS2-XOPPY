@@ -2,6 +2,12 @@ from orangewidget import gui
 from orangewidget.settings import Setting
 from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
 
+XRAYLIB_AVAILABLE = True
+
+try: import xraylib
+except: XRAYLIB_AVAILABLE = False
+
+from dabax.dabax_xraylib import DabaxXraylib
 from dabax.dabax_files import dabax_f0_files, dabax_f1f2_files, dabax_crosssec_files
 
 class XoppyWidgetDabax(XoppyWidget):
@@ -17,11 +23,12 @@ class XoppyWidgetDabax(XoppyWidget):
 
         # widget index xx
         box1 = gui.widgetBox(self.tab_dabax)
-        gui.comboBox(box1, self, "MATERIAL_CONSTANT_LIBRARY_FLAG",
-                     label='Material Library', addSpace=True,
-                     items=["xraylib", "dabax [default]"],
-                     orientation="horizontal",
-                     callback=self.set_visibility)
+        self.cb_material_library = \
+            gui.comboBox(box1, self, "MATERIAL_CONSTANT_LIBRARY_FLAG",
+                         label='Material Library', addSpace=True,
+                         items=["xraylib", "dabax [default]"],
+                         orientation="horizontal",
+                         callback=self.set_material_constant_library)
 
         # widget index xx
         self.dabax_f0_box = gui.widgetBox(self.tab_dabax)
@@ -44,9 +51,15 @@ class XoppyWidgetDabax(XoppyWidget):
                      items=dabax_crosssec_files(),
                      orientation="horizontal")
 
-        self.set_visibility()
+        if not XRAYLIB_AVAILABLE:
+            self.MATERIAL_CONSTANT_LIBRARY_FLAG = 1
+            self.cb_material_library.setEnabled(False)
+        else:
+            self.cb_material_library.setEnabled(True)
 
-    def set_visibility(self):
+        self.set_material_constant_library()
+
+    def set_material_constant_library(self):
         self.dabax_f0_box.setVisible(False)
         self.dabax_f1f2_box.setVisible(False)
         self.dabax_crosssec_box.setVisible(False)

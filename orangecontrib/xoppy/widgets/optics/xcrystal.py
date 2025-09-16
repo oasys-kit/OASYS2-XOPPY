@@ -13,7 +13,7 @@ from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget_dabax import XoppyWidgetDab
 import scipy.constants as codata
 
 try: import xraylib
-except: print("xraylib not available")
+except: pass
 
 from dabax.dabax_xraylib import DabaxXraylib
 from dabax.dabax_files import dabax_f1f2_files

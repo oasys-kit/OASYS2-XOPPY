@@ -1,5 +1,3 @@
-from PyQt5.QtWidgets import QApplication
-
 from orangewidget import gui
 from orangewidget.settings import Setting
 
@@ -12,7 +10,7 @@ from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget_dabax import XoppyWidgetDab
 from xoppylib.scattering_functions.xoppy_calc_f0 import xoppy_calc_f0
 
 try: import xraylib
-except: print("xraylib not available")
+except: pass
 
 from dabax.dabax_files import dabax_f0_files
 from dabax.dabax_xraylib import DabaxXraylib

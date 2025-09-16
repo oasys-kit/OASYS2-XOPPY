@@ -20,20 +20,20 @@ URL = 'https://github.com/oasys-kit/XOPPY'
 DOWNLOAD_URL = 'https://github.com/oasys-kit/XOPPY'
 LICENSE = 'GPLv3'
 
-KEYWORDS = (
+KEYWORDS = [
     'X-ray optics',
     'simulator',
     'oasys2',
-)
+]
 
-CLASSIFIERS = (
+CLASSIFIERS = [
     'Development Status :: 5 - Production/Stable',
     'Environment :: X11 Applications :: Qt',
     'Environment :: Console',
     'Environment :: Plugins',
     'Programming Language :: Python :: 3',
     'Intended Audience :: Science/Research',
-)
+]
 
 SETUP_REQUIRES = (
     'setuptools',
