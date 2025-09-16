@@ -244,7 +244,7 @@ class ImageViewWithFWHM(QWidget, OWComponent):
             label.set_fontsize(1)
 
         n_patches = len(self.plot_canvas._histoHPlot._backend.ax.patches)
-        if (n_patches > 0): self.plot_canvas._histoHPlot._backend.ax.patches.remove(self.plot_canvas._histoHPlot._backend.ax.patches[n_patches-1])
+        if (n_patches > 0): self.plot_canvas._histoHPlot._backend.ax.patches[n_patches-1].remove()
 
         if not ticket['fwhm_h'] == 0.0:
             x_fwhm_i, x_fwhm_f = ticket['fwhm_coordinates_h']
@@ -258,7 +258,7 @@ class ImageViewWithFWHM(QWidget, OWComponent):
                                                                  linewidth=1.5))
 
         n_patches = len(self.plot_canvas._histoVPlot._backend.ax.patches)
-        if (n_patches > 0): self.plot_canvas._histoVPlot._backend.ax.patches.remove(self.plot_canvas._histoVPlot._backend.ax.patches[n_patches-1])
+        if (n_patches > 0): self.plot_canvas._histoVPlot._backend.ax.patches[n_patches-1].remove()
 
         if not ticket['fwhm_v'] == 0.0:
             y_fwhm_i, y_fwhm_f = ticket['fwhm_coordinates_v']
