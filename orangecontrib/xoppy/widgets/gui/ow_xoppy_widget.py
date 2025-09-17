@@ -4,7 +4,7 @@ import matplotlib
 
 from silx.gui.plot import Plot2D
 from silx.io.specfile import SpecFile
-
+from silx.gui.colors import Colormap
 from silx.gui.plot.StackView import StackViewMainWindow
 
 from PyQt5 import QtGui, QtWidgets
@@ -352,14 +352,16 @@ class XoppyWidget(OWWidget, openclass=True):
 
             self.plot_canvas[plot_canvas_index] = figure
         else:
-
             origin = (dataX[0],dataY[0])
             scale = (dataX[1]-dataX[0],dataY[1]-dataY[0])
 
             data_to_plot = data2D.T
 
-            colormap = {"name":"temperature", "normalization":"linear", "autoscale":True, "vmin":0, "vmax":0, "colors":256}
-
+            colormap = Colormap(name="temperature",
+                                normalization="linear",
+                                autoscaleMode="minmax",
+                                vmin=None,
+                                vmax=None)
 
             if mode == 1:
                 #TODO: delete: srio commented this part as it is never used
@@ -370,7 +372,6 @@ class XoppyWidget(OWWidget, openclass=True):
                 # self.plot_canvas[plot_canvas_index]._imagePlot.setDefaultColormap(colormap)
                 # self.plot_canvas[plot_canvas_index].setImage(numpy.array(data_to_plot), origin=origin, scale=scale)
             elif mode == 2:
-
                 self.plot_canvas[plot_canvas_index] = Plot2D()
 
                 self.plot_canvas[plot_canvas_index].resetZoom()
@@ -387,8 +388,6 @@ class XoppyWidget(OWWidget, openclass=True):
                 self.plot_canvas[plot_canvas_index].getRoiAction().setVisible(False)
                 self.plot_canvas[plot_canvas_index].getColormapAction().setVisible(True)
                 self.plot_canvas[plot_canvas_index].setKeepDataAspectRatio(False)
-
-
 
                 self.plot_canvas[plot_canvas_index].addImage(numpy.array(data_to_plot),
                                                              legend="zio billy",
@@ -435,10 +434,17 @@ class XoppyWidget(OWWidget, openclass=True):
         data_to_plot = numpy.swapaxes(data3D,1,2)
 
         if color_limits_uniform:
-            colormap = {"name":"temperature", "normalization":"linear", "autoscale":False, "vmin":data3D.min(), "vmax":data3D.max(), "colors":256}
-
+            colormap = Colormap(name="temperature",
+                                normalization="linear",
+                                autoscaleMode="minmax",
+                                vmin=data3D.min(),
+                                vmax=data3D.max())
         else:
-            colormap = {"name":"temperature", "normalization":"linear", "autoscale":True, "vmin":0, "vmax":0, "colors":256}
+            colormap = Colormap(name="temperature",
+                                normalization="linear",
+                                autoscaleMode="minmax",
+                                vmin=None,
+                                vmax=None)
 
         self.plot_canvas[plot_canvas_index] = StackViewMainWindow()
 

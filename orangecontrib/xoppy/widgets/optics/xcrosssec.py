@@ -219,11 +219,11 @@ class OWxcrosssec(XoppyWidgetDabax):
             except:
                 raise Exception("Density must be entered.")
         elif self.MAT_FLAG == 2: # nist list
-            descriptor = xraylib.GetCompoundDataNISTList()[self.MAT_LIST]
+            descriptor = material_constants_library.GetCompoundDataNISTList()[self.MAT_LIST]
             try:
                 density = float(self.DENSITY)
             except:
-                cp = xraylib.GetCompoundDataNISTByIndex(self.MAT_LIST)
+                cp = material_constants_library.GetCompoundDataNISTByIndex(self.MAT_LIST)
                 density = cp["density"]
 
         print("using descriptor = %s" % descriptor)
