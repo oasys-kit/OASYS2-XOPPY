@@ -41,7 +41,7 @@ SETUP_REQUIRES = (
 
 INSTALL_REQUIRES = (
     'oasys2>=0.0.1',
-    'xoppylib>=1.0.35',
+    'xoppylib>=1.0.40',
 )
 
 PACKAGES = find_packages(exclude=('*.tests', '*.tests.*', 'tests.*', 'tests'))
@@ -51,15 +51,12 @@ PACKAGE_DATA = {
     "orangecontrib.xoppy.widgets.optics":["icons/*.png", "icons/*.jpg", "misc/*.*"],
 }
 
-NAMESPACE_PACAKGES = ["orangecontrib", "orangecontrib.xoppy", "orangecontrib.xoppy.widgets"]
-
 ENTRY_POINTS = {
     'oasys2.addons' : ("xoppy = orangecontrib.xoppy", ),
     'oasys2.widgets' : (
         "XOPPY Sources = orangecontrib.xoppy.widgets.source",
         "XOPPY Optics = orangecontrib.xoppy.widgets.optics",
     ),
-    #'oasys2.menus' : ("xoppymenu = orangecontrib.xoppy.menu",)
 }
 
 if __name__ == '__main__':
@@ -80,7 +77,6 @@ if __name__ == '__main__':
           setup_requires = SETUP_REQUIRES,
           install_requires = INSTALL_REQUIRES,
           entry_points = ENTRY_POINTS,
-          namespace_packages=NAMESPACE_PACAKGES,
           include_package_data = True,
           zip_safe = False,
           )
