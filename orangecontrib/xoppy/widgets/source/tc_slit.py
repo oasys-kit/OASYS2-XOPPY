@@ -4,7 +4,6 @@ import scipy.constants as codata
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from orangewidget.widget import Input
 
 from oasys2.widget import gui as oasysgui
 from oasys2.widget.util.exchange import DataExchangeObject
@@ -538,7 +537,7 @@ if True:
                 self.ELECTRONBEAMDIVERGENCEH = xp
                 self.ELECTRONBEAMDIVERGENCEV = yp
                 self.PERIODID = light_source._magnetic_structure._period_length
-                self.NPERIODS = light_source._magnetic_structure._number_of_periods
+                self.NPERIODS = int(light_source._magnetic_structure._number_of_periods)
                 self.KMAX = light_source._magnetic_structure._K_vertical
 
                 self.set_enabled(False)

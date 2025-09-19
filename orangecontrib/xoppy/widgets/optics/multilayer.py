@@ -677,9 +677,9 @@ if True:
 
 
     def defaults(self):
-         self.resetSettings()
-         self.compute()
-         return
+         self._reset_settings()
+         #self.compute()
+         #return
 
     def get_help_name(self):
         return 'multilayer'

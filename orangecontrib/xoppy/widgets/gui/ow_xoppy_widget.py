@@ -502,7 +502,7 @@ class XoppyWidget(OWWidget, openclass=True):
 
 
     def defaults(self):
-         self.reset_settings()
+         self._reset_settings()
 
     def help1(self):
 

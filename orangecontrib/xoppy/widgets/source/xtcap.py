@@ -274,7 +274,7 @@ class OWtcap(XoppyWidget):
         gui.comboBox(box1, self, "BSL",
                      label=self.unitLabels()[idx],
                      items=['No', 'Yes'],
-                     rientation="horizontal", labelWidth=350)
+                     orientation="horizontal", labelWidth=350)
         self.show_at(self.unitFlags()[idx], box1)
 
     def unitLabels(self):

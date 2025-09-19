@@ -835,7 +835,7 @@ if True:
 
                 self.FIELD = 0
                 self.PERIODID = light_source._magnetic_structure._period_length
-                self.NPERIODS = light_source._magnetic_structure._number_of_periods
+                self.NPERIODS = int(light_source._magnetic_structure._number_of_periods)
                 self.KV = light_source._magnetic_structure._K_vertical
 
                 self.set_enabled(False)

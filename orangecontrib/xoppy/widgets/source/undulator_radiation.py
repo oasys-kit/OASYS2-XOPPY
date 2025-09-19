@@ -771,7 +771,7 @@ if True:
                 self.ELECTRONBEAMDIVERGENCEH = xp
                 self.ELECTRONBEAMDIVERGENCEV = yp
                 self.PERIODID = light_source._magnetic_structure._period_length
-                self.NPERIODS = light_source._magnetic_structure._number_of_periods
+                self.NPERIODS = int(light_source._magnetic_structure._number_of_periods)
                 self.KV = light_source._magnetic_structure._K_vertical
                 self.KH = light_source._magnetic_structure._K_horizontal
                 # TODO: self.KPHASE = ... define and import it in SYNED

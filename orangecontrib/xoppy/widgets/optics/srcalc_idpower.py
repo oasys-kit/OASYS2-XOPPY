@@ -154,12 +154,7 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
         self.info_output.setReadOnly(True)
         info_tab.layout().addWidget(self.info_output)
 
-
-    def resetSettings(self):
-        pass
-
     def build_gui(self):
-
         self.left_side.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
         self.left_side.setMaximumWidth(self.CONTROL_AREA_WIDTH + 20)
         self.left_side.updateGeometry()
