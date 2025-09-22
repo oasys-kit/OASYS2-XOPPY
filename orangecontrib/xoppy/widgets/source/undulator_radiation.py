@@ -99,7 +99,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 0 
         idx += 1 
         box1 = gui.widgetBox(box) 
-        self.id_ELECTRONENERGY = oasysgui.lineEdit(box1, self, "ELECTRONENERGY",
+        self.id_ELECTRONENERGY = oasysgui.lineEdit(box1, self, "ELECTRONENERGY", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
@@ -107,7 +107,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 1 
         idx += 1 
         box1 = gui.widgetBox(box) 
-        self.id_ELECTRONENERGYSPREAD = oasysgui.lineEdit(box1, self, "ELECTRONENERGYSPREAD",
+        self.id_ELECTRONENERGYSPREAD = oasysgui.lineEdit(box1, self, "ELECTRONENERGYSPREAD", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
@@ -115,7 +115,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 2 
         idx += 1 
         box1 = gui.widgetBox(box) 
-        self.id_ELECTRONCURRENT = oasysgui.lineEdit(box1, self, "ELECTRONCURRENT",
+        self.id_ELECTRONCURRENT = oasysgui.lineEdit(box1, self, "ELECTRONCURRENT", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
@@ -123,7 +123,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 3 
         idx += 1 
         box1 = gui.widgetBox(box) 
-        self.id_ELECTRONBEAMSIZEH = oasysgui.lineEdit(box1, self, "ELECTRONBEAMSIZEH",
+        self.id_ELECTRONBEAMSIZEH = oasysgui.lineEdit(box1, self, "ELECTRONBEAMSIZEH", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
@@ -131,7 +131,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 4 
         idx += 1 
         box1 = gui.widgetBox(box) 
-        self.id_ELECTRONBEAMSIZEV = oasysgui.lineEdit(box1, self, "ELECTRONBEAMSIZEV",
+        self.id_ELECTRONBEAMSIZEV = oasysgui.lineEdit(box1, self, "ELECTRONBEAMSIZEV", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
@@ -139,7 +139,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 5 
         idx += 1 
         box1 = gui.widgetBox(box) 
-        self.id_ELECTRONBEAMDIVERGENCEH = oasysgui.lineEdit(box1, self, "ELECTRONBEAMDIVERGENCEH",
+        self.id_ELECTRONBEAMDIVERGENCEH = oasysgui.lineEdit(box1, self, "ELECTRONBEAMDIVERGENCEH", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
@@ -147,7 +147,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 6 
         idx += 1 
         box1 = gui.widgetBox(box) 
-        self.id_ELECTRONBEAMDIVERGENCEV = oasysgui.lineEdit(box1, self, "ELECTRONBEAMDIVERGENCEV",
+        self.id_ELECTRONBEAMDIVERGENCEV = oasysgui.lineEdit(box1, self, "ELECTRONBEAMDIVERGENCEV", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
@@ -155,7 +155,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 7 
         idx += 1 
         box1 = gui.widgetBox(box) 
-        self.id_PERIODID = oasysgui.lineEdit(box1, self, "PERIODID",
+        self.id_PERIODID = oasysgui.lineEdit(box1, self, "PERIODID", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
@@ -163,7 +163,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 8 
         idx += 1 
         box1 = gui.widgetBox(box) 
-        self.id_NPERIODS = oasysgui.lineEdit(box1, self, "NPERIODS",
+        self.id_NPERIODS = oasysgui.lineEdit(box1, self, "NPERIODS", valueType=int,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
@@ -172,7 +172,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 9
         idx += 1
         box1 = gui.widgetBox(box)
-        self.id_KV = oasysgui.lineEdit(box1, self, "KV",
+        self.id_KV = oasysgui.lineEdit(box1, self, "KV", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -180,7 +180,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 9B
         idx += 1
         box1 = gui.widgetBox(box)
-        self.id_KH = oasysgui.lineEdit(box1, self, "KH",
+        self.id_KH = oasysgui.lineEdit(box1, self, "KH", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -188,7 +188,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 9C
         idx += 1
         box1 = gui.widgetBox(box)
-        self.id_KPHASE = oasysgui.lineEdit(box1, self, "KPHASE",
+        self.id_KPHASE = oasysgui.lineEdit(box1, self, "KPHASE", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -198,7 +198,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 10
         idx += 1
         box1 = gui.widgetBox(box)
-        oasysgui.lineEdit(box1, self, "DISTANCE",
+        oasysgui.lineEdit(box1, self, "DISTANCE", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -215,7 +215,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget <><><>
         idx += 1
         box1 = gui.widgetBox(box)
-        oasysgui.lineEdit(box1, self, "HARMONICNUMBER",
+        oasysgui.lineEdit(box1, self, "HARMONICNUMBER", valueType=int,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -224,7 +224,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 11
         idx += 1
         box1 = gui.widgetBox(box)
-        oasysgui.lineEdit(box1, self, "GAPH",
+        oasysgui.lineEdit(box1, self, "GAPH", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -232,7 +232,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 12
         idx += 1
         box1 = gui.widgetBox(box)
-        oasysgui.lineEdit(box1, self, "GAPV",
+        oasysgui.lineEdit(box1, self, "GAPV", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -240,7 +240,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 13
         idx += 1
         box1 = gui.widgetBox(box)
-        oasysgui.lineEdit(box1, self, "HSLITPOINTS",
+        oasysgui.lineEdit(box1, self, "HSLITPOINTS", valueType=int,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -248,7 +248,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index 14
         idx += 1
         box1 = gui.widgetBox(box)
-        oasysgui.lineEdit(box1, self, "VSLITPOINTS",
+        oasysgui.lineEdit(box1, self, "VSLITPOINTS", valueType=int,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -256,7 +256,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index <><>
         idx += 1
         box1 = gui.widgetBox(box)
-        oasysgui.lineEdit(box1, self, "PHOTONENERGYMIN",
+        oasysgui.lineEdit(box1, self, "PHOTONENERGYMIN", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -264,7 +264,7 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index <><>
         idx += 1
         box1 = gui.widgetBox(box)
-        oasysgui.lineEdit(box1, self, "PHOTONENERGYMAX",
+        oasysgui.lineEdit(box1, self, "PHOTONENERGYMAX", valueType=float,
                      label=self.unitLabels()[idx],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -272,9 +272,9 @@ class OWundulator_radiation(XoppyWidget, WidgetDecorator):
         #widget index <><>
         idx += 1
         box1 = gui.widgetBox(box)
-        oasysgui.lineEdit(box1, self, "PHOTONENERGYPOINTS",
-                     label=self.unitLabels()[idx],
-                    orientation="horizontal", labelWidth=250)
+        oasysgui.lineEdit(box1, self, "PHOTONENERGYPOINTS", valueType=int,
+                          label=self.unitLabels()[idx],
+                          orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
 
@@ -488,7 +488,7 @@ if True:
                 "self.SETRESONANCE == 0", "self.SETRESONANCE == 0",
                 "True", "True",
                 "self.SETRESONANCE == 0", "self.SETRESONANCE == 0","self.SETRESONANCE == 0",
-                "True","True"]
+                "True", "True"]
 
     def get_help_name(self):
         return 'undulator_radiation'
