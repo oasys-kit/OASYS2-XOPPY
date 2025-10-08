@@ -7,7 +7,6 @@ XRAYLIB_AVAILABLE = True
 try: import xraylib
 except: XRAYLIB_AVAILABLE = False
 
-from dabax.dabax_xraylib import DabaxXraylib
 from dabax.dabax_files import dabax_f0_files, dabax_f1f2_files, dabax_crosssec_files
 
 class XoppyWidgetDabax(XoppyWidget):
