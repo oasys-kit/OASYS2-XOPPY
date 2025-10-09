@@ -15,4 +15,4 @@ ICON = "icons/xoppy_2.png"
 
 BACKGROUND = "#FFD39F"
 
-PRIORITY = 2001
+PRIORITY = 3.0
