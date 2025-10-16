@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication
+from AnyQt.QtWidgets import QApplication
 
 from orangewidget import gui
 from orangewidget.settings import Setting

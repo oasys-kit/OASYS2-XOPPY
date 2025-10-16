@@ -7,9 +7,9 @@ from silx.io.specfile import SpecFile
 from silx.gui.colors import Colormap
 from silx.gui.plot.StackView import StackViewMainWindow
 
-from PyQt5 import QtGui, QtWidgets
-from PyQt5.QtCore import QRect
-from PyQt5.QtWidgets import QApplication, QAction
+from AnyQt.QtGui import QTextCursor 
+from AnyQt.QtCore import QRect
+from AnyQt.QtWidgets import QApplication, QTextEdit, QMessageBox
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
@@ -54,7 +54,7 @@ class XoppyWidget(OWWidget, openclass=True):
         self.runaction.triggered.connect(self.compute)
         self.addAction(self.runaction)
 
-        geom = QApplication.desktop().availableGeometry()
+        geom = QApplication.primaryScreen().geometry()
         self.setGeometry(QRect(round(geom.width()*0.05),
                                round(geom.height()*0.05),
                                round(min(geom.width()*0.98, self.MAX_WIDTH)),
@@ -98,7 +98,7 @@ class XoppyWidget(OWWidget, openclass=True):
 
         #output tab
         out_tab = oasysgui.createTabPage(self.main_tabs, "Output")
-        self.xoppy_output = QtWidgets.QTextEdit()
+        self.xoppy_output = QTextEdit()
         self.xoppy_output.setReadOnly(True)
 
         out_box = gui.widgetBox(out_tab, "System Output", addSpace=True, orientation="horizontal")
@@ -170,9 +170,9 @@ class XoppyWidget(OWWidget, openclass=True):
 
                 self.plot_results(self.calculated_data)
             except Exception as exception:
-                QtWidgets.QMessageBox.critical(self, "Error",
+                QMessageBox.critical(self, "Error",
                                             str(exception),
-                                            QtWidgets.QMessageBox.Ok)
+                                            QMessageBox.Ok)
 
         self.progressBarFinished()
 
@@ -229,7 +229,7 @@ class XoppyWidget(OWWidget, openclass=True):
 
     def writeStdOut(self, text):
         cursor = self.xoppy_output.textCursor()
-        cursor.movePosition(QtGui.QTextCursor.End)
+        cursor.movePosition(QTextCursor.End)
         cursor.insertText(text)
         self.xoppy_output.setTextCursor(cursor)
         self.xoppy_output.ensureCursorVisible()
@@ -492,8 +492,8 @@ class XoppyWidget(OWWidget, openclass=True):
                 self.Outputs.xoppy_data.send(self.calculated_data)
 
         except Exception as exception:
-            QtWidgets.QMessageBox.critical(self, "Error",
-                                       str(exception), QtWidgets.QMessageBox.Ok)
+            QMessageBox.critical(self, "Error",
+                                       str(exception), QMessageBox.Ok)
             self.setStatusMessage("Error!")
 
             if self.IS_DEVELOP: raise exception

@@ -1,6 +1,6 @@
 import sys
 import numpy
-from PyQt5.QtWidgets import QApplication, QMessageBox, QSizePolicy
+from AnyQt.QtWidgets import QApplication, QMessageBox, QSizePolicy
 
 from orangewidget import gui
 from orangewidget.settings import Setting

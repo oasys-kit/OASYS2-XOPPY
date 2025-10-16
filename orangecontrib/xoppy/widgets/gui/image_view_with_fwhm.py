@@ -2,8 +2,8 @@
 # TODO: centralize in OASYS?
 
 import numpy, decimal
-from PyQt5.QtGui import QFont, QPalette, QColor
-from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QDialog, QVBoxLayout, QDialogButtonBox
+from AnyQt.QtGui import QFont, QPalette, QColor
+from AnyQt.QtWidgets import QWidget, QGridLayout, QLabel, QDialog, QVBoxLayout, QDialogButtonBox
 
 from matplotlib.patches import FancyArrowPatch, ArrowStyle
 
@@ -320,7 +320,7 @@ if __name__=="__main__":
     w.set_gaussian(0.00055,0.0002)
 
 
-    from PyQt5.QtWidgets import QApplication
+    from AnyQt.QtWidgets import QApplication
     app = QApplication([])
 
     widget = QWidget()

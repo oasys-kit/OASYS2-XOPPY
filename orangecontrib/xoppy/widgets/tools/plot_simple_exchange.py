@@ -1,7 +1,7 @@
 import numpy
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from PyQt5 import QtWidgets
+from AnyQt.QtWidgets import QApplication
 
 from orangewidget.widget import Input
 from oasys2.widget.widget import OWWidget
@@ -105,7 +105,7 @@ add_widget_parameters_to_module(__name__)
 
 
 def example_1d():
-    app = QtWidgets.QApplication([])
+    app = QApplication([])
     ow = OWPlotSimpleExchange()
     a = DataExchangeObject("TEXT","TEST")
     a.add_content("data",numpy.array([
@@ -120,7 +120,7 @@ def example_1d():
     ow.saveSettings()
 
 def example_2d():
-    app = QtWidgets.QApplication([])
+    app = QApplication([])
     ow = OWPlotSimpleExchange()
     a = DataExchangeObject("TEXT","TEST")
 

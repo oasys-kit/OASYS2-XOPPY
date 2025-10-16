@@ -1,6 +1,6 @@
 import sys, os
 import numpy
-from PyQt5.QtWidgets import QSizePolicy
+from AnyQt.QtWidgets import QSizePolicy
 
 from orangewidget import gui
 from orangewidget.settings import Setting

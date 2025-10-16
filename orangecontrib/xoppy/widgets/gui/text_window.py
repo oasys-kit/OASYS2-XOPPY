@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtWidgets import QPlainTextEdit
+from AnyQt.QtWidgets import QMainWindow
+from AnyQt.QtWidgets import QPlainTextEdit
 
 
 class TextWindow(QMainWindow):
@@ -39,7 +39,7 @@ class TextWindow(QMainWindow):
 
 
 if __name__ == "__main__":
-    from PyQt5.QtWidgets import QApplication
+    from AnyQt.QtWidgets import QApplication
 
     app = QApplication([])
 

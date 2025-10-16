@@ -1,8 +1,7 @@
 import sys, os, platform
 import numpy
-from PyQt5.QtWidgets import QApplication, QSizePolicy
 
-from PyQt5 import QtWidgets
+from AnyQt.QtWidgets import QApplication, QSizePolicy, QTextEdit
 
 from orangewidget import gui
 from orangewidget.settings import Setting
@@ -150,7 +149,7 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
         super().__init__()
 
         info_tab = oasysgui.createTabPage(self.main_tabs, "Info")
-        self.info_output = QtWidgets.QTextEdit()
+        self.info_output = QTextEdit()
         self.info_output.setReadOnly(True)
         info_tab.layout().addWidget(self.info_output)
 

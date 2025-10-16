@@ -1,5 +1,4 @@
 import sys, os
-from PyQt5 import QtCore
 
 try:
     import matplotlib

@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMessageBox
+from AnyQt.QtWidgets import QApplication, QMessageBox
 
 from orangewidget import gui
 from orangewidget.settings import Setting

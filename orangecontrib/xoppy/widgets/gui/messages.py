@@ -4,7 +4,7 @@
 #
 ###############################################################
 
-from PyQt5.QtWidgets import QMessageBox
+from AnyQt.QtWidgets import QMessageBox
 
 def showConfirmMessage(message, informative_text, parent=None):
     msgBox = QMessageBox()

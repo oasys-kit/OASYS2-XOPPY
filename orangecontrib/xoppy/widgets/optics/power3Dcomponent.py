@@ -5,7 +5,7 @@ import numpy
 
 import scipy.constants as codata
 
-from PyQt5.QtWidgets import QMessageBox, QSizePolicy
+from AnyQt.QtWidgets import QMessageBox, QSizePolicy
 
 from orangewidget import gui
 from orangewidget.settings import Setting
