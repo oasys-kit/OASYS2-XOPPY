@@ -153,7 +153,7 @@ class XoppyWidget(OWWidget, openclass=True):
         return ["Energy [eV]"]
 
     def getYTitles(self):
-        return ["X [$\mu$m]"]
+        return ["X [$\\mu$m]"]
 
     def getVariablesToPlot(self):
         return [(0, 1)]
