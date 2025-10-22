@@ -47,10 +47,10 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
     keywords = ["xoppy", "Undulator Radiation", "power3Dcomponent"]
 
     class Inputs:
-        exchange_data      = MultiInput("ExchangeData", DataExchangeObject, default=True, auto_summary=False)
+        exchange_data      = MultiInput("Exchange Data", DataExchangeObject, default=True, auto_summary=False)
         syned_data         = WidgetDecorator.syned_input_data(multi_input=True)
-        surface_data_front = MultiInput("Surface Data Front", OasysSurfaceData, default=True, auto_summary=False)
-        surface_data_back  = MultiInput("Surface Data Back", OasysSurfaceData, default=True, auto_summary=False)
+        surface_data_front = MultiInput("Oasys Surface Data Front", OasysSurfaceData, default=True, auto_summary=False)
+        surface_data_back  = MultiInput("Oasys Surface Data Back", OasysSurfaceData, default=True, auto_summary=False)
 
     INPUT_BEAM_FROM = Setting(0)
     INPUT_BEAM_FILE = Setting("undulator_radiation.h5")

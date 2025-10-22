@@ -30,9 +30,7 @@ class XoppyWidget(OWWidget, openclass=True):
     maintainer_email = "srio@esrf.eu"
 
     class Outputs:
-        xoppy_data = Output(name="xoppy_data",
-                            type=DataExchangeObject,
-                            id="xoppy_data", default=True, auto_summary=False)
+        xoppy_data = Output(name="Xoppy Data", type=DataExchangeObject, id="xoppy_data", default=True, auto_summary=False)
 
     IMAGE_WIDTH = 760
     IMAGE_HEIGHT = 545

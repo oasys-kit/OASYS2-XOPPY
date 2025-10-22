@@ -32,7 +32,7 @@ class OWPower1DMonochromator(XoppyWidgetDabax):
     keywords = ["xoppy", "power", "monochromator"]
 
     class Inputs:
-        exchange_data = MultiInput("ExchangeData", DataExchangeObject, default=True, auto_summary=False)
+        exchange_data = MultiInput("Exchange Data", DataExchangeObject, default=True, auto_summary=False)
 
     SOURCE = Setting(2)
     TYPE = Setting(3)

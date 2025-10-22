@@ -20,7 +20,7 @@ class OWPlotSimpleExchange(OWWidget):
     keywords = ["list", "of", "keywords"]
 
     class Inputs:
-        xoppy_data = Input("xoppy_data", DataExchangeObject, default=True, auto_summary=False)
+        xoppy_data = Input("Exchange Data", DataExchangeObject, default=True, auto_summary=False)
 
     def __init__(self):
         super().__init__()

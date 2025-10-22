@@ -31,7 +31,7 @@ class OWxpower(XoppyWidgetDabax):
     keywords = ["xoppy", "power"]
 
     class Inputs:
-        exchange_data = Input("ExchangeData", DataExchangeObject, default=True, auto_summary=False)
+        exchange_data = Input("Exchange Data", DataExchangeObject, default=True, auto_summary=False)
 
     SOURCE = Setting(2)
     ENER_MIN = Setting(1000.0)
