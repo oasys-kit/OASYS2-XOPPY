@@ -9,7 +9,7 @@ from matplotlib.patches import FancyArrowPatch, ArrowStyle
 
 from orangewidget.gui import OWComponent
 from oasys2.widget import gui
-from oasys2.widget.util.widget_util import get_sigma, get_fwhm
+from srxraylib.util.histograms import get_sigma, get_fwhm
 
 from silx.gui.plot.ImageView import ImageView
 
