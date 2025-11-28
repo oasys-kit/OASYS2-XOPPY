@@ -135,8 +135,8 @@ class OWPower1DMonochromator(XoppyWidgetDabax):
         self.box_source = gui.comboBox(box1, self, "TYPE",
                                        label=self.unitLabels()[idx], addSpace=False,
                                        items=['Empty',
-                                              'Si Bragg',
-                                              'Si Laue',
+                                              'Crystal Bragg',
+                                              'Crystal Laue',
                                               'Multilayer',
                                               'Reflectivity from file'],
                                         orientation="horizontal", labelWidth=200)
@@ -465,12 +465,12 @@ class OWPower1DMonochromator(XoppyWidgetDabax):
             self.ENER_SELECTED = congruence.checkPositiveNumber(self.ENER_SELECTED, "Energy Selected [eV]")
             self.H_MILLER = congruence.checkNumber(self.H_MILLER, "H Miller")
             self.K_MILLER = congruence.checkNumber(self.K_MILLER, "K Miller")
-            self.L_MILLER = congruence.checkNumber(self.H_MILLER, "L Miller")
+            self.L_MILLER = congruence.checkNumber(self.L_MILLER, "L Miller")
         if self.TYPE == 2:
             self.ENER_SELECTED = congruence.checkPositiveNumber(self.ENER_SELECTED, "Energy Selected [eV]")
             self.H_MILLER = congruence.checkNumber(self.H_MILLER, "H Miller")
             self.K_MILLER = congruence.checkNumber(self.K_MILLER, "K Miller")
-            self.L_MILLER = congruence.checkNumber(self.H_MILLER, "L Miller")
+            self.L_MILLER = congruence.checkNumber(self.L_MILLER, "L Miller")
             self.THICK = congruence.checkPositiveNumber(self.THICK, "Laue crystal thickness [mm]")
         if self.TYPE == 3:
             self.ENER_SELECTED = congruence.checkPositiveNumber(self.ENER_SELECTED, "Energy Selected [eV]")
@@ -543,6 +543,9 @@ class OWPower1DMonochromator(XoppyWidgetDabax):
         dict_parameters = {
             "TYPE"                       : self.TYPE,
             "crystal_descriptor"         : self.CRYSTAL_DESCRIPTOR,
+            "H_MILLER"                   : self.H_MILLER,
+            "K_MILLER"                   : self.K_MILLER,
+            "L_MILLER"                   : self.L_MILLER,
             "ENER_SELECTED"              : self.ENER_SELECTED,
             "METHOD"                     : self.METHOD,
             "THICK"                      : self.THICK,
@@ -565,6 +568,9 @@ class OWPower1DMonochromator(XoppyWidgetDabax):
         out_dictionary = xoppy_calc_power_monochromator(energies, source,
                                                         TYPE                       = self.TYPE,
                                                         crystal_descriptor         = self.CRYSTAL_DESCRIPTOR,
+                                                        h_miller                   = self.H_MILLER,
+                                                        k_miller                   = self.K_MILLER,
+                                                        l_miller                   = self.L_MILLER,
                                                         ENER_SELECTED              = self.ENER_SELECTED,
                                                         METHOD                     = self.METHOD,
                                                         THICK                      = self.THICK,
@@ -599,7 +605,10 @@ out_dictionary = xoppy_calc_power_monochromator(
         energy, # array with energies in eV
         spectral_power, # array with source spectral density
         TYPE                       = {TYPE}, # 0=None, 1=Crystal Bragg, 2=Crystal Laue, 3=Multilayer, 4=External file
-        crystal_descriptor         = "{crystal_descriptor}", # crystal descriptor (for xraylib/dabax) in crystal monochromator
+        crystal_descriptor         = "{crystal_descriptor}", # for TYPE in [0,1] crystal descriptor (for xraylib/dabax) in crystal monochromator
+        h_miller                   = {H_MILLER},  # for TYPE in [0,1], the Miller index h
+        k_miller                   = {K_MILLER},  # for TYPE in [0,1], the Miller index k
+        l_miller                   = {L_MILLER},  # for TYPE in [0,1], the Miller index l
         ENER_SELECTED              = {ENER_SELECTED}, # Energy to set crystal monochromator
         METHOD                     = {METHOD}, # For crystals, in crystalpy, 0=Zachariasem, 1=Guigay
         THICK                      = {THICK}, # crystal thicknes Laur crystal in um
