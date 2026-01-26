@@ -853,7 +853,7 @@ if True:
     spectral_power_transmitted = f_transmitted * codata.e * 1e3     
     plot_image(spectral_power_transmitted[0,:,:],h,v,title="Transmitted Spectral Power Density [W/eV/mm2] at E=%g eV" % ({emin}),xtitle="H [mm]",ytitle="V [mm]",aspect='auto')
     
-    power_density_transmitted = numpy.trapz(spectral_power_transmitted, e, axis=0)
+    power_density_transmitted = numpy.trapezoid(spectral_power_transmitted, e, axis=0)
     power_density_integral = integral_2d(power_density_transmitted, h, v)
     plot_image(power_density_transmitted, h, v,
                      xtitle='H [mm] (normal to beam)',
@@ -866,7 +866,7 @@ if True:
     
     plot_image(spectral_power_density_absorbed[0,:,:],H,V,title="Absorbed Spectral Power Density [W/eV/mm2] at E=%g eV" % ({emin}),xtitle="H [mm]",ytitle="V [mm]",aspect='auto')
     
-    power_density_absorbed = numpy.trapz(spectral_power_density_absorbed, E, axis=0)
+    power_density_absorbed = numpy.trapezoid(spectral_power_density_absorbed, E, axis=0)
     power_density_integral = integral_2d(power_density_absorbed, H, V)
     plot_image(power_density_absorbed, H, V,
                      xtitle='H [mm] (o.e. coordinates)',
@@ -991,7 +991,7 @@ if True:
                 self.tabs.setCurrentIndex(0)
 
                 # plot result vs X,Y
-                power_density = numpy.trapz(p_spectral_power, e0, axis=0)
+                power_density = numpy.trapezoid(p_spectral_power, e0, axis=0)
                 power_density_integral = integral_2d(power_density, h0, v0)
                 self.plot_data2D(power_density, h0, v0, 1, 0,
                                  xtitle='H [mm]',
@@ -999,15 +999,15 @@ if True:
                                  title='Input beam Power density [W/mm^2]. Integral: %6.3f W'%power_density_integral,)
 
                 # plot result vs E
-                spectral_density = numpy.trapz(numpy.trapz(p_spectral_power, v0, axis=2), h0, axis=1)
-                spectral_density_integral = numpy.trapz(spectral_density, e0)
+                spectral_density = numpy.trapezoid(numpy.trapezoid(p_spectral_power, v0, axis=2), h0, axis=1)
+                spectral_density_integral = numpy.trapezoid(spectral_density, e0)
                 self.plot_data1D(e, spectral_density, 2, 0,
                                  xtitle='Photon Energy [eV]',
                                  ytitle= 'Spectral power [W/eV]',
                                  title='Input beam Spectral power. Integral: %6.3f W'%spectral_density_integral,)
 
                 # plot flux vs E
-                # spectral_density = numpy.trapz(numpy.trapz(p_spectral_power, v0, axis=2), h0, axis=1)
+                # spectral_density = numpy.trapezoid(numpy.trapezoid(p_spectral_power, v0, axis=2), h0, axis=1)
                 flux = spectral_density / (codata.e * 1e3)
                 self.plot_data1D(e, flux, 3, 0,
                                  xtitle='Photon Energy [eV]',
@@ -1027,7 +1027,7 @@ if True:
                     ytitle = "Reflectance"
                 else:
                     ytitle = "Transmittance"
-                self.plot_data1D(e, numpy.trapz(numpy.trapz(transmittance, v, axis=2), h, axis=1) /
+                self.plot_data1D(e, numpy.trapezoid(numpy.trapezoid(transmittance, v, axis=2), h, axis=1) /
                                  (h[-1] - h[0]) / (v[-1] - v[0]), 1, 0,
                                  xtitle='Photon Energy [eV]',
                                  ytitle=ytitle,
@@ -1041,7 +1041,7 @@ if True:
                                  color_limits_uniform=True)
 
                 # plot absorbance spectrum
-                self.plot_data1D(E, numpy.trapz(numpy.trapz(absorbance, V, axis=2), H, axis=1) / (H[-1] - H[0]) / (V[-1] - V[0]), 3, 0,
+                self.plot_data1D(E, numpy.trapezoid(numpy.trapezoid(absorbance, V, axis=2), H, axis=1) / (H[-1] - H[0]) / (V[-1] - V[0]), 3, 0,
                                  xtitle='Photon Energy [eV]',
                                  ytitle='Absorbance',
                                  title='Integrated Absorbance',)
@@ -1057,7 +1057,7 @@ if True:
                 self.tabs.setCurrentIndex(0)
 
                 # plot result vs X,Y
-                power_density = numpy.trapz(p_absorbed, E, axis=0)
+                power_density = numpy.trapezoid(p_absorbed, E, axis=0)
                 power_density_integral = integral_2d(power_density, H, V)
                 self.plot_data2D(power_density, H, V, 1, 0,
                                  xtitle='H [mm] (o.e. coordinates)',
@@ -1065,15 +1065,15 @@ if True:
                                  title='Absorbed Power Density [W/mm^2]. Integral: %6.3f W'%power_density_integral, )
 
                 # plot result vs E
-                spectral_density = numpy.trapz(numpy.trapz(p_absorbed, V, axis=2), H, axis=1)
-                spectral_density_integral = numpy.trapz(spectral_density, E)
+                spectral_density = numpy.trapezoid(numpy.trapezoid(p_absorbed, V, axis=2), H, axis=1)
+                spectral_density_integral = numpy.trapezoid(spectral_density, E)
                 self.plot_data1D(e, spectral_density, 2, 0,
                                  xtitle='Photon Energy [eV]',
                                  ytitle='Spectral power [W/eV]',
                                  title='Absorbed Spectral Power. Integral: %6.3f W'%spectral_density_integral, )
 
                 # plot flux vs E
-                # spectral_density = numpy.trapz(numpy.trapz(p_absorbed, V, axis=2), H, axis=1)
+                # spectral_density = numpy.trapezoid(numpy.trapezoid(p_absorbed, V, axis=2), H, axis=1)
                 flux = spectral_density / (codata.e * 1e3)
                 self.plot_data1D(e, flux, 3, 0,
                                  xtitle='Photon Energy [eV]',
@@ -1096,7 +1096,7 @@ if True:
                 self.tabs.setCurrentIndex(0)
 
                 # self.plot_data2D(p_transmitted.sum(axis=0) * energy_step, H, V, 1, 0,
-                power_density = numpy.trapz(p_transmitted, E, axis=0)
+                power_density = numpy.trapezoid(p_transmitted, E, axis=0)
                 power_density_integral = integral_2d(power_density, h, v)
                 self.plot_data2D(power_density, h, v, 1, 0,
                                  xtitle='H [mm] (normal to beam)',
@@ -1104,15 +1104,15 @@ if True:
                                  title=tr_ref_txt+' Power Density [W/mm^2]. Integral: %6.3f W'%power_density_integral, )
 
                 # plot result vs E
-                spectral_density = numpy.trapz(numpy.trapz(p_transmitted, v, axis=2), h, axis=1)
-                spectral_density_integral = numpy.trapz(spectral_density, e)
+                spectral_density = numpy.trapezoid(numpy.trapezoid(p_transmitted, v, axis=2), h, axis=1)
+                spectral_density_integral = numpy.trapezoid(spectral_density, e)
                 self.plot_data1D(e, spectral_density, 2, 0,
                                  xtitle='Photon Energy [eV]',
                                  ytitle='Spectral power [W/eV]',
                                  title=tr_ref_txt+' Spectral Power. Integral: %6.3f W'%spectral_density_integral, )
 
                 # plot flux vs E
-                # spectral_density = numpy.trapz(numpy.trapz(p_transmitted, v, axis=2), h, axis=1)
+                # spectral_density = numpy.trapezoid(numpy.trapezoid(p_transmitted, v, axis=2), h, axis=1)
                 flux = spectral_density / (codata.e * 1e3)
                 self.plot_data1D(e, flux, 3, 0,
                                  xtitle='Photon Energy [eV]',
