@@ -11,6 +11,8 @@ from oasys2.canvas.util.canvas_util import add_widget_parameters_to_module
 
 from orangecontrib.xoppy.widgets.gui.ow_xoppy_widget import XoppyWidget
 from xoppylib.sources.xoppy_bm_wiggler import xoppy_calc_wigg
+from xoppylib.sources.xoppy_bm_wiggler import xoppy_calc_wiggler_on_aperture
+
 
 from syned.widget.widget_decorator import WidgetDecorator
 import syned.beamline.beamline as synedb
@@ -19,7 +21,7 @@ import syned.storage_ring.magnetic_structures.insertion_device as synedid
 class OWxwiggler(XoppyWidget, WidgetDecorator):
     name = "WIGGLER"
     id = "orange.widgets.dataxwiggler"
-    description = "Wiggler Spectrum (Full Emission)"
+    description = "Wiggler Spectrum (Full Emission) & on Slit"
     icon = "icons/xoppy_xwiggler.png"
     priority = 9
     category = ""
@@ -36,6 +38,21 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
     NTRAJPOINTS = Setting(101)
     CURRENT = Setting(200.0)
     FILE = Setting("?")
+    #Slit settings
+    SLIT_FLAG = Setting(0)
+    SLIT_D = Setting(30.0)
+    SLIT_NY = Setting (100)
+    SLIT_WIDTH_H_MM = Setting(5.0)
+    SLIT_HEIGHT_V_MM = Setting(5.0)
+    SLIT_CENTER_H_MM = Setting(0.0)
+    SLIT_CENTER_V_MM = Setting(0.0)
+    #advance settings
+    SHIFT_X_FLAG = Setting(0)
+    SHIFT_X_VALUE = Setting(0.0)
+    SHIFT_BETAX_FLAG = Setting(0)
+    SHIFT_BETAX_VALUE = Setting(0.0)
+    TRAJ_RESAMPLING_FACTOR = Setting(1e4)
+    SLIT_POINTS_FACTOR = Setting(1)
 
     class Inputs:
        syned_data = WidgetDecorator.syned_input_data()
@@ -45,7 +62,14 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
 
     def build_gui(self):
 
-        box = oasysgui.widgetBox(self.controlArea, self.name + " Input Parameters", orientation="vertical", width=self.CONTROL_AREA_WIDTH-5)
+        tabs_setting = oasysgui.tabWidget(self.controlArea)
+        tabs_setting.setFixedWidth(self.CONTROL_AREA_WIDTH-5)
+
+        tab_1 = oasysgui.createTabPage(tabs_setting, self.name + " Input Parameters")
+        tab_2 = oasysgui.createTabPage(tabs_setting, "Advanced Settings")
+
+
+        box = oasysgui.widgetBox(tab_1, self.name + " Input Parameters", orientation="vertical", width=self.CONTROL_AREA_WIDTH-5)
         
         idx = -1
         
@@ -144,15 +168,142 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
 
         gui.button(file_box, self, "...", callback=self.selectFile)
 
+        #Slit settings
+
+        box = oasysgui.widgetBox(tab_1, "Slit setup", orientation="vertical", width=self.CONTROL_AREA_WIDTH-5)
+
+        #widget index 12
+        idx += 1
+        box1 = gui.widgetBox(box)
+        self.id_FIELD = gui.comboBox(box1, self, "SLIT_FLAG",
+                     label=self.unitLabels()[idx],
+                    items=['Full emission', 'On slit'],
+                    valueType=int, orientation="horizontal", labelWidth=250)
+        self.show_at(self.unitFlags()[idx], box1)
+
+        #widget index 13
+        idx += 1
+        box1 = gui.widgetBox(box)
+        self.id_CURRENT = oasysgui.lineEdit(box1, self, "SLIT_D",
+                     label=self.unitLabels()[idx],
+                    valueType=float, orientation="horizontal", labelWidth=250)
+        self.show_at(self.unitFlags()[idx], box1)
+
+        #widget index 14
+        idx += 1
+        box1 = gui.widgetBox(box)
+        self.id_CURRENT = oasysgui.lineEdit(box1, self, "SLIT_NY",
+                     label=self.unitLabels()[idx],
+                    valueType=int, orientation="horizontal", labelWidth=250)
+        self.show_at(self.unitFlags()[idx], box1)
+
+        #widget index 15
+        idx += 1
+        box1 = gui.widgetBox(box)
+        self.id_CURRENT = oasysgui.lineEdit(box1, self, "SLIT_WIDTH_H_MM",
+                     label=self.unitLabels()[idx],
+                    valueType=float, orientation="horizontal", labelWidth=250)
+        self.show_at(self.unitFlags()[idx], box1)
+
+        #widget index 16
+        idx += 1
+        box1 = gui.widgetBox(box)
+        self.id_CURRENT = oasysgui.lineEdit(box1, self, "SLIT_HEIGHT_V_MM",
+                     label=self.unitLabels()[idx],
+                    valueType=float, orientation="horizontal", labelWidth=250)
+        self.show_at(self.unitFlags()[idx], box1)
+
+        #widget index 17
+        idx += 1
+        box1 = gui.widgetBox(box)
+        self.id_CURRENT = oasysgui.lineEdit(box1, self, "SLIT_CENTER_H_MM",
+                     label=self.unitLabels()[idx],
+                    valueType=float, orientation="horizontal", labelWidth=250)
+        self.show_at(self.unitFlags()[idx], box1)
+
+        #widget index 18
+        idx += 1
+        box1 = gui.widgetBox(box)
+        self.id_CURRENT = oasysgui.lineEdit(box1, self, "SLIT_CENTER_V_MM",
+                     label=self.unitLabels()[idx],
+                    valueType=int, orientation="horizontal", labelWidth=250)
+        self.show_at(self.unitFlags()[idx], box1)
+
+        #
+        # advanced
+        #
+
+        box0 = oasysgui.widgetBox(tab_2, "", orientation="vertical", width=self.CONTROL_AREA_WIDTH - 15)
+
+        box = oasysgui.widgetBox(box0, "Shift of the Electron Trajectory", orientation="vertical", width=self.CONTROL_AREA_WIDTH - 15)
+
+        #widget index 19
+        idx += 1
+        box1 = gui.widgetBox(box)
+        gui.comboBox(box1, self, "SHIFT_BETAX_FLAG", label=self.unitLabels()[idx], items=["No shift", "Half excursion", "Minimum", "Maximum", "Value at zero", "User value"], labelWidth=260, valueType=float, orientation="horizontal")
+        self.show_at(self.unitFlags()[idx], box1)
+
+        #widget index 20
+        idx += 1
+        box1 = gui.widgetBox(box)
+        oasysgui.lineEdit(box1, self, "SHIFT_BETAX_VALUE", label=self.unitLabels()[idx], labelWidth=260, valueType=float, orientation="horizontal")
+        self.show_at(self.unitFlags()[idx], box1)
+
+        #widget index 21
+        idx += 1
+        box1 = gui.widgetBox(box)
+        gui.comboBox(box1, self, "SHIFT_X_FLAG", label=self.unitLabels()[idx], items=["No shift", "Half excursion", "Minimum", "Maximum", "Value at zero", "User value"], labelWidth=260, orientation="horizontal")
+        self.show_at(self.unitFlags()[idx], box1)
+
+        #widget index 22
+        idx += 1
+        box1 = gui.widgetBox(box)
+        oasysgui.lineEdit(box1, self, "SHIFT_X_VALUE", label=self.unitLabels()[idx], labelWidth=260, valueType=float, orientation="horizontal")
+        self.show_at(self.unitFlags()[idx], box1)
+
+        #widget index 23
+
+        box = oasysgui.widgetBox(box0, "Sampling of Electron Trajectory", orientation="vertical", width=self.CONTROL_AREA_WIDTH - 15)
+
+        idx += 1
+        box1 = gui.widgetBox(box)
+        oasysgui.lineEdit(box1, self, "TRAJ_RESAMPLING_FACTOR", label=self.unitLabels()[idx], labelWidth=260, valueType=float, orientation="horizontal")
+        self.show_at(self.unitFlags()[idx], box1)
+
+         #widget index 24
+
+        idx += 1
+        box1 = gui.widgetBox(box)
+        oasysgui.lineEdit(box1, self, "SLIT_POINTS_FACTOR", label=self.unitLabels()[idx], labelWidth=260, valueType=float, orientation="horizontal")
+        self.show_at(self.unitFlags()[idx], box1)
+
     def unitLabels(self):
-         return ['Magnetic field: ','Number of periods','Wiggler period [m]','K value','Beam energy [GeV]',
-                 'Min Photon Energy [eV]','Max Photon Energy [eV]','Number of energy points',
-                 'Number of traj points per period','Electron Beam Current [mA]','File/Url with Magnetic Field']
+         return ['Magnetic Field: ','Number of Periods','Wiggler Period [m]',
+                 'K value','Beam Energy [GeV]', 'Min Photon Energy [eV]',
+                 'Max Photon Energy [eV]','Number of Energy Points',
+                 'Number of traj points per period','Electron Beam Current [mA]',
+                 'File/Url with Magnetic Field', 'Calculation type',
+                 'Distance to Slit [m]', 'Psi Number of Points',
+                 'Slit Width H [mm]', 'Slit Height V [mm]',
+                 'Slit Center H [mm]', 'Slit Center V [mm]',
+                 'Shift Transversal Velocity', 'Value',
+                 'Shift Transversal Coordinate', 'Value',
+                 'Trajectory Resampling Factor', 'Factor of Number of Points in Slit'
+                ]
 
     def unitFlags(self):
-         return ['True','True','self.FIELD  !=  1','self.FIELD  ==  0','True',
-                 'True','True','True',
-                 'self.FIELD  !=  1','True','self.FIELD  !=  0']
+         return ['True','True','self.FIELD  !=  1',
+                 'self.FIELD  ==  0','True', 'True',
+                 'True','True',
+                 'self.FIELD  !=  1','True',
+                 'self.FIELD  !=  0', 'True',
+                 'self.SLIT_FLAG !=0', 'self.SLIT_FLAG !=0',
+                 'self.SLIT_FLAG !=0', 'self.SLIT_FLAG !=0',
+                 'self.SLIT_FLAG !=0', 'self.SLIT_FLAG !=0',
+                 'self.FIELD  !=  0', 'self.FIELD  !=  0 and self.SHIFT_BETAX_FLAG == 5',
+                 'self.FIELD  !=  0', 'self.FIELD  !=  0 and self.SHIFT_X_FLAG == 5',
+                 'self.SLIT_FLAG !=0', 'self.SLIT_FLAG !=0'
+                 ]
 
     def selectFile(self):
         self.le_file.setText(oasysgui.selectFileFromDialog(self, self.FILE, "Open B File"))
@@ -168,6 +319,12 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         congruence.checkLessThan(self.PHOT_ENERGY_MIN, self.PHOT_ENERGY_MAX, "Min Photon Energy", "Max Photon Energy")
         self.NPOINTS = congruence.checkStrictlyPositiveNumber(self.NPOINTS, "Number of Energy Points")
         self.CURRENT = congruence.checkStrictlyPositiveNumber(self.CURRENT, "Electron Beam Current")
+        self.SLIT_D = congruence.checkStrictlyPositiveNumber(self.SLIT_D, "Distance to slit")
+        self.SLIT_NY = congruence.checkStrictlyPositiveNumber(self.SLIT_NY, "Number of Psi angle points")
+        self.SLIT_WIDTH_H_MM = congruence.checkStrictlyPositiveNumber(self.SLIT_WIDTH_H_MM, "Slit Width H")
+        self.SLIT_HEIGHT_V_MM = congruence.checkStrictlyPositiveNumber(self.SLIT_HEIGHT_V_MM, "Slit Height V")
+        self.TRAJ_RESAMPLING_FACTOR = congruence.checkStrictlyPositiveNumber(self.TRAJ_RESAMPLING_FACTOR,"Trajectory Resampling Factor")
+        self.SLIT_POINTS_FACTOR = congruence.checkStrictlyPositiveNumber(self.SLIT_POINTS_FACTOR, "Factor of number of points in aperture")
 
         if self.FIELD == 0:
             self.ULAMBDA = congruence.checkStrictlyPositiveNumber(self.ULAMBDA, "Wiggler period")
@@ -184,35 +341,80 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
     def do_xoppy_calculation(self):
         # write python script in standard output
         dict_parameters = {
-            "FIELD"           : self.FIELD,
-            "NPERIODS"        : self.NPERIODS,
-            "ULAMBDA"         : self.ULAMBDA,
-            "K"               : self.K,
-            "ENERGY"          : self.ENERGY,
-            "PHOT_ENERGY_MIN" : self.PHOT_ENERGY_MIN,
-            "PHOT_ENERGY_MAX" : self.PHOT_ENERGY_MAX,
-            "NPOINTS"         : self.NPOINTS,
-            "NTRAJPOINTS"     : self.NTRAJPOINTS,
-            "CURRENT"         : self.CURRENT,
-            "FILE"            : self.FILE,
+            "FIELD"                  : self.FIELD,
+            "NPERIODS"               : self.NPERIODS,
+            "ULAMBDA"                : self.ULAMBDA,
+            "K"                      : self.K,
+            "ENERGY"                 : self.ENERGY,
+            "PHOT_ENERGY_MIN"        : self.PHOT_ENERGY_MIN,
+            "PHOT_ENERGY_MAX"        : self.PHOT_ENERGY_MAX,
+            "NPOINTS"                : self.NPOINTS,
+            "NTRAJPOINTS"            : self.NTRAJPOINTS,
+            "CURRENT"                : self.CURRENT,
+            "FILE"                   : self.FILE,
+            "SLIT_FLAG"              : self.SLIT_FLAG,
+            "SLIT_D"                 : self.SLIT_D,
+            "SLIT_NY"                : self.SLIT_NY,
+            "SLIT_WIDTH_H_MM"        : self.SLIT_WIDTH_H_MM,
+            "SLIT_HEIGHT_V_MM"       : self.SLIT_HEIGHT_V_MM,
+            "SLIT_CENTER_H_MM"       : self.SLIT_CENTER_H_MM,
+            "SLIT_CENTER_V_MM"       : self.SLIT_CENTER_V_MM,
+            "SHIFT_X_FLAG"           : self.SHIFT_X_FLAG,
+            "SHIFT_X_VALUE"          : self.SHIFT_X_VALUE,
+            "SHIFT_BETAX_FLAG"       : self.SHIFT_BETAX_FLAG,
+            "SHIFT_BETAX_VALUE"      : self.SHIFT_BETAX_VALUE,
+            "TRAJ_RESAMPLING_FACTOR" : self.TRAJ_RESAMPLING_FACTOR,
+            "SLIT_POINTS_FACTOR"     : self.SLIT_POINTS_FACTOR
             }
 
-        script = self.script_template().format_map(dict_parameters)
+        if self.SLIT_FLAG:
+            script = self.script_template_slit().format_map(dict_parameters)
+        else:
+            script = self.script_template().format_map(dict_parameters)
 
         self.xoppy_script.set_code(script)
 
-        e, f0, p0, cumulated_power, traj, traj_info =  xoppy_calc_wigg(
-            FIELD=self.FIELD,
-            NPERIODS=self.NPERIODS,
-            ULAMBDA=self.ULAMBDA,
-            K=self.K,
-            ENERGY=self.ENERGY,
-            PHOT_ENERGY_MIN=self.PHOT_ENERGY_MIN,
-            PHOT_ENERGY_MAX=self.PHOT_ENERGY_MAX,
-            NPOINTS=self.NPOINTS,
-            NTRAJPOINTS=self.NTRAJPOINTS,
-            CURRENT=self.CURRENT,
-            FILE=self.FILE)
+        if self.SLIT_FLAG == 0:
+            e, f0, p0, cumulated_power, traj, traj_info =  xoppy_calc_wigg(
+                FIELD=self.FIELD,
+                NPERIODS=self.NPERIODS,
+                ULAMBDA=self.ULAMBDA,
+                K=self.K,
+                ENERGY=self.ENERGY,
+                PHOT_ENERGY_MIN=self.PHOT_ENERGY_MIN,
+                PHOT_ENERGY_MAX=self.PHOT_ENERGY_MAX,
+                NPOINTS=self.NPOINTS,
+                NTRAJPOINTS=self.NTRAJPOINTS,
+                CURRENT=self.CURRENT,
+                FILE=self.FILE)
+        else:
+            e, f0, p0, cumulated_power, traj, traj_info = xoppy_calc_wiggler_on_aperture(
+                FIELD=self.FIELD,
+                NPERIODS=self.NPERIODS,
+                ULAMBDA=self.ULAMBDA,
+                K=self.K,
+                ENERGY=self.ENERGY,
+                PHOT_ENERGY_MIN=self.PHOT_ENERGY_MIN,
+                PHOT_ENERGY_MAX=self.PHOT_ENERGY_MAX,
+                NPOINTS=self.NPOINTS,
+                NTRAJPOINTS=self.NTRAJPOINTS,
+                CURRENT=self.CURRENT,
+                FILE=self.FILE,
+                SLIT_FLAG=self.SLIT_FLAG,
+                SLIT_D=self.SLIT_D,
+                SLIT_NY=self.SLIT_NY,
+                SLIT_WIDTH_H_MM=self.SLIT_WIDTH_H_MM,
+                SLIT_HEIGHT_V_MM=self.SLIT_HEIGHT_V_MM,
+                SLIT_CENTER_H_MM=self.SLIT_CENTER_H_MM,
+                SLIT_CENTER_V_MM=self.SLIT_CENTER_V_MM,
+                SHIFT_X_FLAG=self.SHIFT_X_FLAG,
+                SHIFT_X_VALUE=self.SHIFT_X_VALUE,
+                SHIFT_BETAX_FLAG=self.SHIFT_BETAX_FLAG,
+                SHIFT_BETAX_VALUE=self.SHIFT_BETAX_VALUE,
+                TRAJ_RESAMPLING_FACTOR=self.TRAJ_RESAMPLING_FACTOR,
+                SLIT_POINTS_FACTOR=self.SLIT_POINTS_FACTOR
+            )
+
 
         return e, f0, p0 , cumulated_power, traj, traj_info, script
 
@@ -240,21 +442,69 @@ energy, flux, spectral_power, cumulated_power, traj, traj_info =  xoppy_calc_wig
 #
 if True:
     from srxraylib.plot.gol import plot
-    plot(energy,flux,
-        xtitle="Photon energy [eV]",ytitle="Flux [photons/s/o.1%bw]",title="Wiggler Flux",
-        xlog=True,ylog=True,show=False)
-    plot(energy,spectral_power,
-        xtitle="Photon energy [eV]",ytitle="Power [W/eV]",title="Wiggler Spectral Power",
-        xlog=True,ylog=True,show=False)
-    plot(energy,cumulated_power,
-        xtitle="Photon energy [eV]",ytitle="Cumulated Power [W]",title="Wiggler Cumulated Power",
-        xlog=False,ylog=False,show=True)
+    plot(energy, flux,
+        xtitle="Photon energy [eV]", ytitle="Flux [photons/s/o.1%bw]", title="Wiggler Flux",
+        xlog=True, ylog=True, grid=True, show=False)
+    plot(energy, spectral_power,
+        xtitle="Photon energy [eV]", ytitle="Power [W/eV]", title="Wiggler Spectral Power",
+        xlog=True, ylog=True, grid=True, show=False)
+    plot(energy, cumulated_power,
+        xtitle="Photon energy [eV]", ytitle="Cumulated Power [W]", title="Wiggler Cumulated Power",
+        xlog=False, ylog=False, grid=True, show=True)
 #
 # end script
 #
 """
 
+    def script_template_slit(self):
+        return """
+#
+# script to make the calculations (created by XOPPY:wiggler)
+#
+from xoppylib.sources.xoppy_bm_wiggler import xoppy_calc_wiggler_on_aperture
+energy, flux, spectral_power, cumulated_power, traj, traj_info =  xoppy_calc_wiggler_on_aperture(
+    FIELD={FIELD},
+    NPERIODS={NPERIODS},
+    ULAMBDA={ULAMBDA},
+    K={K},
+    ENERGY={ENERGY},
+    PHOT_ENERGY_MIN={PHOT_ENERGY_MIN},
+    PHOT_ENERGY_MAX={PHOT_ENERGY_MAX},
+    NPOINTS={NPOINTS},
+    NTRAJPOINTS={NTRAJPOINTS},
+    CURRENT={CURRENT},
+    FILE="{FILE}",
+    SLIT_FLAG={SLIT_FLAG},
+    SLIT_D={SLIT_D},
+    SLIT_NY={SLIT_NY},
+    SLIT_WIDTH_H_MM={SLIT_WIDTH_H_MM},
+    SLIT_HEIGHT_V_MM={SLIT_HEIGHT_V_MM},
+    SLIT_CENTER_H_MM={SLIT_CENTER_H_MM},
+    SLIT_CENTER_V_MM={SLIT_CENTER_V_MM},
+    SHIFT_X_FLAG={SHIFT_X_FLAG},
+    SHIFT_X_VALUE={SHIFT_X_VALUE},
+    SHIFT_BETAX_FLAG={SHIFT_BETAX_FLAG},
+    SHIFT_BETAX_VALUE={SHIFT_BETAX_VALUE},
+    TRAJ_RESAMPLING_FACTOR={TRAJ_RESAMPLING_FACTOR},
+    SLIT_POINTS_FACTOR ={SLIT_POINTS_FACTOR})
 
+#
+# example plot
+#
+from srxraylib.plot.gol import plot
+plot(energy, flux,
+    xtitle="Photon energy [eV]", ytitle="Flux [photons/s/0.1%bw]", title="Wiggler Flux",
+    xlog=True, ylog=True, grid=True, show=False)
+plot(energy, spectral_power,
+    xtitle="Photon energy [eV]", ytitle="Power [W/eV]", title="Wiggler Spectral Power",
+    xlog=True, ylog=True, grid=True, show=False)
+plot(energy, cumulated_power,
+    xtitle="Photon energy [eV]", ytitle="Cumulated Power [W]", title="Wiggler Cumulated Power",
+    xlog=False, ylog=False, grid=True, show=True)
+#
+# end script
+#
+"""
 
     def extract_data_from_xoppy_output(self, calculation_output):
         e, f, sp, cumulated_power, traj, traj_info, script = calculation_output
@@ -388,3 +638,12 @@ if True:
                 raise Exception("Empty Data")
 
 add_widget_parameters_to_module(__name__)
+
+if __name__ == "__main__":
+    import sys
+    from AnyQt.QtWidgets import QApplication
+
+    a = QApplication(sys.argv)
+    ow = OWxwiggler()
+    ow.show()
+    a.exec()
