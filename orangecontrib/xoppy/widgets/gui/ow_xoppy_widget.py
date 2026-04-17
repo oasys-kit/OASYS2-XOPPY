@@ -404,7 +404,10 @@ class XoppyWidget(OWWidget, openclass=True):
 
 
     def plot_data3D(self, data3D, dataE, dataX, dataY, tabs_canvas_index, plot_canvas_index,
-                    title="", xtitle="", ytitle="", color_limits_uniform=False):
+                    title="", xtitle="", ytitle="", color_limits_uniform=False, title_callback=None):
+
+        if title_callback is None:
+            title_callback = lambda idx: "Energy: %6.3f eV" % dataE[idx]
 
         for i in range(1+self.tab[tabs_canvas_index].layout().count()):
             self.tab[tabs_canvas_index].layout().removeItem(self.tab[tabs_canvas_index].layout().itemAt(i))
@@ -449,7 +452,7 @@ class XoppyWidget(OWWidget, openclass=True):
         self.plot_canvas[plot_canvas_index].setGraphTitle(title)
         self.plot_canvas[plot_canvas_index].setLabels(["Photon Energy [eV]",ytitle,xtitle])
         self.plot_canvas[plot_canvas_index].setColormap(colormap=colormap)
-        self.plot_canvas[plot_canvas_index].setTitleCallback(lambda idx: "Energy: %6.3f eV"%dataE[idx])
+        self.plot_canvas[plot_canvas_index].setTitleCallback(title_callback)
 
         self.plot_canvas[plot_canvas_index].setStack(numpy.array(data_to_plot),
                                                      calibrations=[dim0_calib, dim1_calib, dim2_calib] )

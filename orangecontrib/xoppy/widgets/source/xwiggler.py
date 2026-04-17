@@ -386,7 +386,10 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
                 NPOINTS=self.NPOINTS,
                 NTRAJPOINTS=self.NTRAJPOINTS,
                 CURRENT=self.CURRENT,
-                FILE=self.FILE)
+                FILE=self.FILE,
+                outFile="",
+                outFileTraj="",
+                )
         else:
             e, f0, p0, cumulated_power, traj, traj_info = xoppy_calc_wiggler_on_aperture(
                 FIELD=self.FIELD,
@@ -412,8 +415,10 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
                 SHIFT_BETAX_FLAG=self.SHIFT_BETAX_FLAG,
                 SHIFT_BETAX_VALUE=self.SHIFT_BETAX_VALUE,
                 TRAJ_RESAMPLING_FACTOR=self.TRAJ_RESAMPLING_FACTOR,
-                SLIT_POINTS_FACTOR=self.SLIT_POINTS_FACTOR
-            )
+                SLIT_POINTS_FACTOR=self.SLIT_POINTS_FACTOR,
+                outFile="",
+                outFileTraj="",
+                )
 
 
         return e, f0, p0 , cumulated_power, traj, traj_info, script
@@ -435,7 +440,10 @@ energy, flux, spectral_power, cumulated_power, traj, traj_info =  xoppy_calc_wig
     NPOINTS={NPOINTS},
     NTRAJPOINTS={NTRAJPOINTS},
     CURRENT={CURRENT},
-    FILE="{FILE}")
+    FILE="{FILE}",
+    outFile="",
+    outFileTraj="",
+    )
 
 #
 # example plot
@@ -486,7 +494,10 @@ energy, flux, spectral_power, cumulated_power, traj, traj_info =  xoppy_calc_wig
     SHIFT_BETAX_FLAG={SHIFT_BETAX_FLAG},
     SHIFT_BETAX_VALUE={SHIFT_BETAX_VALUE},
     TRAJ_RESAMPLING_FACTOR={TRAJ_RESAMPLING_FACTOR},
-    SLIT_POINTS_FACTOR ={SLIT_POINTS_FACTOR})
+    SLIT_POINTS_FACTOR ={SLIT_POINTS_FACTOR},
+    outFile="",
+    outFileTraj="",
+    )
 
 #
 # example plot
