@@ -20,6 +20,9 @@ from dabax.dabax_files import dabax_f1f2_files
 
 from xoppylib.crystals.tools import run_diff_pat, bragg_calc2
 
+
+
+
 class OWxcrystal(XoppyWidgetDabax):
     name = "CRYSTAL"
     id = "orange.widgets.dataxcrystal"
@@ -29,7 +32,7 @@ class OWxcrystal(XoppyWidgetDabax):
     category = ""
     keywords = ["xoppy", "xcrystal"]
  
-    CRYSTAL_MATERIAL = Setting(32)
+    CRYSTAL_MATERIAL = Setting(0)
     MILLER_INDEX_H = Setting(1)
     MILLER_INDEX_K = Setting(1)
     MILLER_INDEX_L = Setting(1)
@@ -269,6 +272,12 @@ class OWxcrystal(XoppyWidgetDabax):
                  'True','(self.MOSAIC  ==  0) or (self.MOSAIC  >  1)','True',
                  'self.MOSAIC  ==  1',
                  'self.MOSAIC  >  1','self.MOSAIC  >  1','self.MOSAIC  >  1','self.MOSAIC  >  1  and  self.ANISOTROPY  ==  0','self.MOSAIC  >  1  and  self.ANISOTROPY  ==  2','self.MOSAIC  >  1  and  self.ANISOTROPY  ==  3']
+
+    def plot_results(self, calculated_data, progressBarValue=80):
+        if not hasattr(self, '_default_tab_set'):
+            self._default_tab_set = True
+            self.tabs.setCurrentIndex(4)  # s-polarized reflectivity
+        super().plot_results(calculated_data, progressBarValue)
 
     def get_help_name(self):
         return 'crystal'
@@ -637,3 +646,12 @@ if True:
 #
 
 add_widget_parameters_to_module(__name__)
+
+if __name__ == "__main__":
+    import sys
+    from AnyQt.QtWidgets import QMessageBox, QApplication
+    app = QApplication(sys.argv)
+    ow = OWxcrystal()
+    ow.show()
+    app.exec()
+    ow.saveSettings()
