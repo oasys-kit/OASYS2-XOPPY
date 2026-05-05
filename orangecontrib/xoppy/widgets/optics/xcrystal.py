@@ -20,6 +20,15 @@ from dabax.dabax_files import dabax_f1f2_files
 
 from xoppylib.crystals.tools import run_diff_pat, bragg_calc2
 
+try:
+    from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+    from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
+except ImportError:
+    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+    from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+
+from orangecontrib.xoppy.widgets.optics.gle_to_matplotlib import GLEPlot
+
 
 
 
@@ -278,6 +287,44 @@ class OWxcrystal(XoppyWidgetDabax):
             self._default_tab_set = True
             self.tabs.setCurrentIndex(4)  # s-polarized reflectivity
         super().plot_results(calculated_data, progressBarValue)
+        self._render_gle_tab()
+
+    def _render_gle_tab(self):
+        import os
+        if not os.path.isfile("diff_pat.gle"):
+            return
+        if hasattr(self, '_gle_fig') and self._gle_fig is not None:
+            import matplotlib.pyplot as plt
+            plt.close(self._gle_fig)
+            self._gle_fig = None
+        layout = self.tab[5].layout()
+        while layout.count():
+            item = layout.takeAt(0)
+            w = item.widget()
+            if w:
+                w.setParent(None)
+        try:
+            fig, ax = GLEPlot("diff_pat.gle").render()
+            self._gle_fig = fig
+            canvas = FigureCanvas(fig)
+            toolbar = NavigationToolbar(canvas, self.tab[5])
+            zoom_in  = toolbar.addAction("+")
+            zoom_out = toolbar.addAction("-")
+            zoom_in.triggered.connect( lambda: self._gle_zoom(ax, canvas, 0.8))
+            zoom_out.triggered.connect(lambda: self._gle_zoom(ax, canvas, 1.25))
+            layout.addWidget(toolbar)
+            layout.addWidget(canvas)
+        except Exception as e:
+            print("GLE plot error:", e)
+
+    def _gle_zoom(self, ax, canvas, factor):
+        xc = sum(ax.get_xlim()) / 2
+        yc = sum(ax.get_ylim()) / 2
+        ax.set_xlim(xc + (ax.get_xlim()[0] - xc) * factor,
+                    xc + (ax.get_xlim()[1] - xc) * factor)
+        ax.set_ylim(yc + (ax.get_ylim()[0] - yc) * factor,
+                    yc + (ax.get_ylim()[1] - yc) * factor)
+        canvas.draw()
 
     def get_help_name(self):
         return 'crystal'
@@ -583,7 +630,7 @@ if True:
         return "XCRYSTAL"
 
     def getTitles(self):
-        return ["Phase_p","Phase_s","Circ. Polariz.","p-polarized reflectivity","s-polarized reflectivity"]
+        return ["Phase_p","Phase_s","Circ. Polariz.","p-polarized reflectivity","s-polarized reflectivity","GLE plot"]
 
     def getXTitles(self):
         if self.SCAN < 3:
@@ -591,29 +638,22 @@ if True:
                     "Th-ThB{in} [" + self.unit_combo.itemText(self.UNIT) + "]",
                     "Th-ThB{in} [" + self.unit_combo.itemText(self.UNIT) + "]",
                     "Th-ThB{in} [" + self.unit_combo.itemText(self.UNIT) + "]",
-                    "Th-ThB{in} [" + self.unit_combo.itemText(self.UNIT) + "]"]
+                    "Th-ThB{in} [" + self.unit_combo.itemText(self.UNIT) + "]",
+                    ""]
         elif self.SCAN == 3:
-            return ["Energy [eV]",
-                    "Energy [eV]",
-                    "Energy [eV]",
-                    "Energy [eV]",
-                    "Energy [eV]"]
+            return ["Energy [eV]", "Energy [eV]", "Energy [eV]", "Energy [eV]", "Energy [eV]", ""]
         else:
-            return ["y (Zachariasen)",
-                    "y (Zachariasen)",
-                    "y (Zachariasen)",
-                    "y (Zachariasen)",
-                    "y (Zachariasen)"]
+            return ["y (Zachariasen)", "y (Zachariasen)", "y (Zachariasen)", "y (Zachariasen)", "y (Zachariasen)", ""]
 
 
     def getYTitles(self):
-        return ["phase_p [rad]","phase_s [rad]","Circ. Polariz.","p-polarized reflectivity","s-polarized reflectivity"]
+        return ["phase_p [rad]","phase_s [rad]","Circ. Polariz.","p-polarized reflectivity","s-polarized reflectivity",""]
 
     def getVariablesToPlot(self):
-        return [(0, 2), (0, 3), (0, 4), (0, 5), (0, 6)]
+        return [(0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 6)]
 
     def getLogPlot(self):
-        return[(False, False), (False, False), (False, False), (False, False), (False, False)]
+        return[(False, False), (False, False), (False, False), (False, False), (False, False), (False, False)]
 
     def plot_histo(self, x, y, progressBarValue, tabs_canvas_index, plot_canvas_index, title="", xtitle="", ytitle="", log_x=False, log_y=False):
         super().plot_histo(x, y,progressBarValue, tabs_canvas_index, plot_canvas_index, title, xtitle, ytitle, log_x, log_y)
