@@ -27,7 +27,7 @@ except ImportError:
     from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
     from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
-from orangecontrib.xoppy.widgets.optics.gle_to_matplotlib import GLEPlot
+from orangecontrib.xoppy.widgets.gui.gle_to_matplotlib import GLEPlot
 
 
 
