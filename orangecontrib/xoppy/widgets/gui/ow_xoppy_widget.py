@@ -11,7 +11,7 @@ from AnyQt.QtGui import QTextCursor
 from AnyQt.QtCore import QRect
 from AnyQt.QtWidgets import QApplication, QTextEdit, QMessageBox
 
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 
 from srxraylib.plot import gol
 

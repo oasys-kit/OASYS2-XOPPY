@@ -1359,7 +1359,7 @@ class OWsrcalc_idpower(XoppyWidget, WidgetDecorator):
 
         if mode == 0:
             data_to_plot = data2D
-            from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+            from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
             from srxraylib.plot.gol import plot_image
             f = plot_image(data_to_plot,
                                                  dataX,
