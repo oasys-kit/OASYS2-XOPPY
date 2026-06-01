@@ -175,7 +175,7 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         #widget index 12
         idx += 1
         box1 = gui.widgetBox(box)
-        self.id_FIELD = gui.comboBox(box1, self, "SLIT_FLAG",
+        gui.comboBox(box1, self, "SLIT_FLAG",
                      label=self.unitLabels()[idx],
                     items=['Full emission', 'On slit'],
                     valueType=int, orientation="horizontal", labelWidth=250)
@@ -184,7 +184,7 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         #widget index 13
         idx += 1
         box1 = gui.widgetBox(box)
-        self.id_CURRENT = oasysgui.lineEdit(box1, self, "SLIT_D",
+        oasysgui.lineEdit(box1, self, "SLIT_D",
                      label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -192,7 +192,7 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         #widget index 14
         idx += 1
         box1 = gui.widgetBox(box)
-        self.id_CURRENT = oasysgui.lineEdit(box1, self, "SLIT_NY",
+        oasysgui.lineEdit(box1, self, "SLIT_NY",
                      label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -200,7 +200,7 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         #widget index 15
         idx += 1
         box1 = gui.widgetBox(box)
-        self.id_CURRENT = oasysgui.lineEdit(box1, self, "SLIT_WIDTH_H_MM",
+        oasysgui.lineEdit(box1, self, "SLIT_WIDTH_H_MM",
                      label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -208,7 +208,7 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         #widget index 16
         idx += 1
         box1 = gui.widgetBox(box)
-        self.id_CURRENT = oasysgui.lineEdit(box1, self, "SLIT_HEIGHT_V_MM",
+        oasysgui.lineEdit(box1, self, "SLIT_HEIGHT_V_MM",
                      label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -216,7 +216,7 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         #widget index 17
         idx += 1
         box1 = gui.widgetBox(box)
-        self.id_CURRENT = oasysgui.lineEdit(box1, self, "SLIT_CENTER_H_MM",
+        oasysgui.lineEdit(box1, self, "SLIT_CENTER_H_MM",
                      label=self.unitLabels()[idx],
                     valueType=float, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -224,7 +224,7 @@ class OWxwiggler(XoppyWidget, WidgetDecorator):
         #widget index 18
         idx += 1
         box1 = gui.widgetBox(box)
-        self.id_CURRENT = oasysgui.lineEdit(box1, self, "SLIT_CENTER_V_MM",
+        oasysgui.lineEdit(box1, self, "SLIT_CENTER_V_MM",
                      label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
