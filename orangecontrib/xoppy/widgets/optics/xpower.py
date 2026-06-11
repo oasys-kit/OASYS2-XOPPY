@@ -1112,7 +1112,7 @@ if True:
 
 add_widget_parameters_to_module(__name__)
 
-
+'''
 if __name__ == "__main__":
     import sys
     from AnyQt.QtWidgets import QApplication
@@ -1165,5 +1165,5 @@ if __name__ == "__main__":
         w.show()
         app.exec()
         w.saveSettings()
-
+'''
 
