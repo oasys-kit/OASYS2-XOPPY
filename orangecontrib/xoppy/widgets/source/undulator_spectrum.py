@@ -249,7 +249,7 @@ class OWundulator_spectrum(XoppyWidget, WidgetDecorator):
         box1 = gui.widgetBox(box)
         gui.comboBox(box1, self, "METHOD",
                      label=self.unitLabels()[idx],
-                    items=['US', 'URGENT', 'SRW'],
+                    items=['US', 'URGENT', 'SRW', 'URGENTPY'],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -389,7 +389,7 @@ energy, flux, spectral_power, cumulated_power = xoppy_calc_undulator_spectrum(
     PHOTONENERGYMIN={PHOTONENERGYMIN},
     PHOTONENERGYMAX={PHOTONENERGYMAX},
     PHOTONENERGYPOINTS={PHOTONENERGYPOINTS},
-    METHOD={METHOD},
+    METHOD={METHOD}, # 0:US, 1:URGENT, 2:SRW (default), 3:URGENTPY
     USEEMITTANCES={USEEMITTANCES})
 
 #
@@ -507,3 +507,10 @@ if True:
                 self.id_KH.setEnabled(False)
 
 add_widget_parameters_to_module(__name__)
+
+if __name__ == "__main__":
+    a = QApplication(sys.argv)
+    ow = OWundulator_spectrum()
+    ow.show()
+    a.exec()
+    ow.saveSettings()

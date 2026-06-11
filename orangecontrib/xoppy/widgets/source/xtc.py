@@ -16,6 +16,7 @@ import syned.beamline.beamline as synedb
 from syned.storage_ring.magnetic_structures.insertion_device import InsertionDevice as synedid
 
 from xoppylib.xoppy_run_binaries import xoppy_calc_xtc
+from xoppylib.sources.xoppy_calc_tcpy import xoppy_calc_tcpy
 
 class OWxtc(XoppyWidget):
     name = "TC"
@@ -45,6 +46,7 @@ class OWxtc(XoppyWidget):
     HELICAL = Setting(0)
     METHOD = Setting(1)
     NEKS = Setting(100)
+    CODE = Setting(0) # 0:fortran 1:python
 
     class Inputs:
         syned_data = WidgetDecorator.syned_input_data()
@@ -213,17 +215,27 @@ class OWxtc(XoppyWidget):
                     valueType=int, orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
+        #widget index 25
+        idx += 1
+        box1 = gui.widgetBox(box)
+        gui.comboBox(box1, self, "CODE",
+                     label=self.unitLabels()[idx],
+                    items=['TC (fortran)', 'TCPY (python)',],
+                    orientation="horizontal", labelWidth=250)
+        self.show_at(self.unitFlags()[idx], box1)
+
     def unitLabels(self):
          return ['Electron energy (GeV)','Current (mA)','Energy Spread (DE/E)',
                  'Sigma X (mm)','Sigma Y (mm)',"Sigma X' (mrad)","Sigma Y' (mrad)",
                  'Period length (cm)','Number of periods',
                  'E1 minimum energy (eV)','E1 maximum energy (eV)',
                  'Number of energy-points','Minimum harmonic number','Maximum harmonic number','Harmonic step size',
-                 'Mode','Method','Neks OR % Helicity']
+                 'Mode','Method','Neks OR % Helicity',
+                 "calculation code"]
 
 
     def unitFlags(self):
-         return ['True' for i in range(19)]
+         return ['True',] * 20
 
 
     def get_help_name(self):
@@ -250,6 +262,15 @@ class OWxtc(XoppyWidget):
         self.NEKS  = congruence.checkPositiveNumber(self.NEKS , "Neks OR % Helicity")
 
     def do_xoppy_calculation(self):
+        if self.CODE == 0:
+            str_import = "from xoppylib.xoppy_run_binaries import xoppy_calc_xtc"
+            str_code = "xoppy_calc_xtc"
+            str_label = "TC"
+        elif self.CODE == 1:
+            str_import = "from xoppylib.sources.xoppy_calc_tcpy import xoppy_calc_tcpy"
+            str_code = "xoppy_calc_tcpy"
+            str_label = "TCPY"
+
         dict_parameters = {
             "ENERGY"         : self.ENERGY        ,
             "CURRENT"        : self.CURRENT       ,
@@ -269,43 +290,50 @@ class OWxtc(XoppyWidget):
             "HELICAL"        : self.HELICAL       ,
             "METHOD"         : self.METHOD        ,
             "NEKS"           : self.NEKS          ,
+            "str_code"       : str_code           ,
+            "str_import"     : str_import         ,
+            "str_label"      : str_label          ,
         }
 
         script = self.script_template().format_map(dict_parameters)
 
         self.xoppy_script.set_code(script)
 
-        data, harmonics_data =  xoppy_calc_xtc(
-            ENERGY         = self.ENERGY        ,
-            CURRENT        = self.CURRENT       ,
-            ENERGY_SPREAD  = self.ENERGY_SPREAD ,
-            SIGX           = self.SIGX          ,
-            SIGY           = self.SIGY          ,
-            SIGX1          = self.SIGX1         ,
-            SIGY1          = self.SIGY1         ,
-            PERIOD         = self.PERIOD        ,
-            NP             = self.NP            ,
-            EMIN           = self.EMIN          ,
-            EMAX           = self.EMAX          ,
-            N              = self.N             ,
-            HARMONIC_FROM  = self.HARMONIC_FROM ,
-            HARMONIC_TO    = self.HARMONIC_TO   ,
-            HARMONIC_STEP  = self.HARMONIC_STEP ,
-            HELICAL        = self.HELICAL       ,
-            METHOD         = self.METHOD        ,
-            NEKS           = self.NEKS          ,
-            )
+        args = {
+            'ENERGY'         : self.ENERGY,
+            'CURRENT'        : self.CURRENT,
+            'ENERGY_SPREAD'  : self.ENERGY_SPREAD,
+            'SIGX'           : self.SIGX,
+            'SIGY'           : self.SIGY,
+            'SIGX1'          : self.SIGX1,
+            'SIGY1'          : self.SIGY1,
+            'PERIOD'         : self.PERIOD,
+            'NP'             : self.NP,
+            'EMIN'           : self.EMIN,
+            'EMAX'           : self.EMAX,
+            'N'              : self.N,
+            'HARMONIC_FROM'  : self.HARMONIC_FROM,
+            'HARMONIC_TO'    : self.HARMONIC_TO,
+            'HARMONIC_STEP'  : self.HARMONIC_STEP,
+            'HELICAL'        : self.HELICAL,
+            'METHOD'         : self.METHOD,
+            'NEKS'           : self.NEKS,
+        }
+        if self.CODE == 0:
+            data, harmonics_data =  xoppy_calc_xtc( **args )
+        elif self.CODE == 1:
+            data, harmonics_data =  xoppy_calc_tcpy( **args )
 
         return data, harmonics_data, script
 
     def script_template(self):
         return """
 #
-# script to make the calculations (created by XOPPY:XTC)
+# script to make the calculations (created by XOPPY:TC)
 #
-from xoppylib.xoppy_run_binaries import xoppy_calc_xtc
+{str_import}
 
-data, harmonics_data =  xoppy_calc_xtc(
+data, harmonics_data =  {str_code}(
         ENERGY         = {ENERGY},
         CURRENT        = {CURRENT},
         ENERGY_SPREAD  = {ENERGY_SPREAD},
@@ -526,3 +554,12 @@ if True:
                 self.id_NP.setEnabled(False)
 
 add_widget_parameters_to_module(__name__)
+
+if __name__ == "__main__":
+    import sys
+    from AnyQt.QtWidgets import QApplication
+    a = QApplication(sys.argv)
+    ow = OWxtc()
+    ow.show()
+    a.exec()
+    ow.saveSettings()

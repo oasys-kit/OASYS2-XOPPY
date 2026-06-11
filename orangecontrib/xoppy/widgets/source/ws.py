@@ -18,6 +18,7 @@ import syned.beamline.beamline as synedb
 import syned.storage_ring.magnetic_structures.insertion_device as synedid
 
 from xoppylib.xoppy_run_binaries import xoppy_calc_ws
+from xoppylib.sources.xoppy_calc_wspy import xoppy_calc_wspy
 
 class OWws(XoppyWidget,WidgetDecorator):
     name = "WS"
@@ -44,6 +45,7 @@ class OWws(XoppyWidget,WidgetDecorator):
     YPS = Setting(2.0)
     NXP = Setting(10)
     NYP = Setting(10)
+    METHOD = Setting(0)
 
     class Inputs:
         syned_data = WidgetDecorator.syned_input_data()
@@ -184,14 +186,23 @@ class OWws(XoppyWidget,WidgetDecorator):
         oasysgui.lineEdit(box1, self, "NYP",
                      label=self.unitLabels()[idx],
                     valueType=int, orientation="horizontal", labelWidth=250)
-        self.show_at(self.unitFlags()[idx], box1) 
+        self.show_at(self.unitFlags()[idx], box1)
+
+        #widget index 17
+        idx += 1
+        box1 = gui.widgetBox(box)
+        gui.comboBox(box1, self, "METHOD",
+                     label=self.unitLabels()[idx],
+                    items=['WS (fortran)', 'WSPY (python)',],
+                    orientation="horizontal", labelWidth=250)
+        self.show_at(self.unitFlags()[idx], box1)
 
     def unitLabels(self):
          # return ['Beam energy (GeV)','Beam current (mA)','Period (cm)','Number of periods','Kx','Ky','Min energy (eV)','Max energy (eV)','Number of energy steps','Distance (m)','X-pos. (mm)','Y-pos. (mm)','X slit [mm or mrad]','Y slit [mm or mrad]','Integration points X','Integration points Y']
-         return ['Beam energy (GeV)','Beam current (mA)','Period (cm)','Number of periods','Ky','Min energy (eV)','Max energy (eV)','Number of energy steps','Distance (m)','X-pos. (mm)','Y-pos. (mm)','X slit [mm or mrad]','Y slit [mm or mrad]','Integration points X','Integration points Y']
+         return ['Beam energy (GeV)','Beam current (mA)','Period (cm)','Number of periods','Ky','Min energy (eV)','Max energy (eV)','Number of energy steps','Distance (m)','X-pos. (mm)','Y-pos. (mm)','X slit [mm or mrad]','Y slit [mm or mrad]','Integration points X','Integration points Y',"calculation code"]
 
     def unitFlags(self):
-         return ['True','True','True','True','True','True','True','True','True','True','True','True','True','True','True']
+         return ['True','True','True','True','True','True','True','True','True','True','True','True','True','True','True','True']
 
     def get_help_name(self):
         return 'ws'
@@ -217,6 +228,15 @@ class OWws(XoppyWidget,WidgetDecorator):
 
     def do_xoppy_calculation(self):
 
+        if self.METHOD == 0:
+            str_import = "from xoppylib.xoppy_run_binaries import xoppy_calc_ws"
+            str_code = "xoppy_calc_ws"
+            str_label = "WS"
+        elif self.METHOD == 1:
+            str_import = "from xoppylib.sources.xoppy_calc_wspy import xoppy_calc_wspy"
+            str_code = "xoppy_calc_wspy"
+            str_label = "WSPY"
+
         dict_parameters = {
             "ENERGY" : self.ENERGY,
             "CUR"    : self.CUR,
@@ -234,30 +254,38 @@ class OWws(XoppyWidget,WidgetDecorator):
             "YPS"    : self.YPS,
             "NXP"    : self.NXP,
             "NYP"    : self.NYP,
+            "str_code"   : str_code,
+            "str_import" : str_import,
+            "str_label"  : str_label,
         }
 
         script = self.script_template().format_map(dict_parameters)
 
         self.xoppy_script.set_code(script)
 
-        outFile = xoppy_calc_ws(
-            ENERGY = self.ENERGY,
-            CUR    = self.CUR,
-            PERIOD = self.PERIOD,
-            N      = self.N,
-            KX     = self.KX,
-            KY     = self.KY,
-            EMIN   = self.EMIN,
-            EMAX   = self.EMAX,
-            NEE    = self.NEE,
-            D      = self.D,
-            XPC    = self.XPC,
-            YPC    = self.YPC,
-            XPS    = self.XPS,
-            YPS    = self.YPS,
-            NXP    = self.NXP,
-            NYP    = self.NYP,
-        )
+        args = {
+            'ENERGY'  : self.ENERGY,
+            'CUR'     : self.CUR,
+            'PERIOD'  : self.PERIOD,
+            'N'       : self.N,
+            'KX'      : self.KX,
+            'KY'      : self.KY,
+            'EMIN'    : self.EMIN,
+            'EMAX'    : self.EMAX,
+            'NEE'     : self.NEE,
+            'D'       : self.D,
+            'XPC'     : self.XPC,
+            'YPC'     : self.YPC,
+            'XPS'     : self.XPS,
+            'YPS'     : self.YPS,
+            'NXP'     : self.NXP,
+            'NYP'     : self.NYP,
+        }
+
+        if self.METHOD == 0:
+            outFile = xoppy_calc_ws( **args)
+        elif self.METHOD == 1:
+            outFile = xoppy_calc_wspy(**args)
 
         return outFile, script
 
@@ -267,9 +295,9 @@ class OWws(XoppyWidget,WidgetDecorator):
 # script to make the calculations (created by XOPPY:WS)
 #
 import numpy
-from xoppylib.xoppy_run_binaries import xoppy_calc_ws
+{str_import}
 
-out_file =  xoppy_calc_ws(
+out_file =  {str_code}(
         ENERGY = {ENERGY},
         CUR    = {CUR},
         PERIOD = {PERIOD},
@@ -301,13 +329,13 @@ cumulated_power = data[:,3]
 if True:
     from srxraylib.plot.gol import plot
     plot(energy,flux,
-        xtitle="Photon energy [eV]",ytitle="Flux [photons/s/0.1%bw]",title="WS Flux",
+        xtitle="Photon energy [eV]",ytitle="Flux [photons/s/0.1%bw]",title="{str_label} Flux",
         xlog=True,ylog=True,show=False)
     plot(energy,spectral_power,
-        xtitle="Photon energy [eV]",ytitle="Power [W/eV]",title="WS Spectral Power",
+        xtitle="Photon energy [eV]",ytitle="Power [W/eV]",title="{str_label} Spectral Power",
         xlog=True,ylog=True,show=False)
     plot(energy,cumulated_power,
-        xtitle="Photon energy [eV]",ytitle="Cumulated Power [W]",title="WS Cumulated Power",
+        xtitle="Photon energy [eV]",ytitle="Cumulated Power [W]",title="{str_label} Cumulated Power",
         xlog=False,ylog=False,show=True)
     
 #
@@ -379,3 +407,12 @@ if True:
                 self.id_KY.setEnabled(False)
 
 add_widget_parameters_to_module(__name__)
+
+if __name__ == "__main__":
+    import sys
+    from AnyQt.QtWidgets import QApplication
+    a = QApplication(sys.argv)
+    ow = OWws()
+    ow.show()
+    a.exec()
+    ow.saveSettings()

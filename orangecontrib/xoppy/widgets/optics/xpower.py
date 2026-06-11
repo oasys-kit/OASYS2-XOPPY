@@ -18,10 +18,16 @@ import scipy.constants as codata
 try: import xraylib
 except: pass
 
+from syned.widget.widget_decorator import WidgetDecorator
+from syned.beamline.optical_elements.absorbers.filter import Filter
+from syned.beamline.optical_elements.mirrors.mirror import Mirror
+from syned.beamline.optical_elements.absorbers.filter_box import FilterBox
+from syned.beamline.beamline import Beamline
+
 from dabax.dabax_xraylib import DabaxXraylib
 from dabax.dabax_files import dabax_f1f2_files, dabax_crosssec_files
 
-class OWxpower(XoppyWidgetDabax):
+class OWxpower(XoppyWidgetDabax, WidgetDecorator):
     name = "POWER"
     id = "orange.widgets.dataxpower"
     description = "Power Absorbed and Transmitted by Optical Elements"
@@ -32,13 +38,15 @@ class OWxpower(XoppyWidgetDabax):
 
     class Inputs:
         exchange_data = Input("Exchange Data", DataExchangeObject, default=True, auto_summary=False)
+        syned_data    = WidgetDecorator.syned_input_data(multi_input=False)
+
 
     SOURCE = Setting(2)
     ENER_MIN = Setting(1000.0)
     ENER_MAX = Setting(50000.0)
     ENER_N = Setting(100)
     SOURCE_FILE = Setting("?")
-    NELEMENTS = Setting(1)
+    NELEMENTS = Setting(1) # this is the max index: 1 means 2 oe
     EL1_FOR = Setting("Be")
     EL1_FLAG = Setting(0)
     EL1_THI = Setting(0.5)
@@ -103,7 +111,7 @@ class OWxpower(XoppyWidgetDabax):
         idx += 1 
         box1 = gui.widgetBox(box) 
         self.box_source = gui.comboBox(box1, self, "SOURCE",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['From Oasys wire', 'Normalized to 1 W/eV', 'From external file (eV, W/eV)', 'From external file (eV, phot/s/.1%bw)'],
                      orientation="horizontal", labelWidth=150)
         self.show_at(self.unitFlags()[idx], box1)
@@ -145,7 +153,7 @@ class OWxpower(XoppyWidgetDabax):
         idx += 1 
         box1 = gui.widgetBox(box) 
         gui.comboBox(box1, self, "NELEMENTS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['1', '2', '3', '4', '5'],
                      orientation="horizontal", callback=self.set_NELEMENTS, labelWidth=330)
         self.show_at(self.unitFlags()[idx], box1)
@@ -163,7 +171,7 @@ class OWxpower(XoppyWidgetDabax):
         idx += 1 
         box1 = gui.widgetBox(box) 
         gui.comboBox(box1, self, "EL1_FLAG",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['Filter', 'Mirror'],
                      orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
@@ -212,7 +220,7 @@ class OWxpower(XoppyWidgetDabax):
         idx += 1 
         box1 = gui.widgetBox(box) 
         gui.comboBox(box1, self, "EL2_FLAG",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['Filter', 'Mirror'],
                      orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
@@ -261,7 +269,7 @@ class OWxpower(XoppyWidgetDabax):
         idx += 1 
         box1 = gui.widgetBox(box) 
         gui.comboBox(box1, self, "EL3_FLAG",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['Filter', 'Mirror'],
                      orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
@@ -310,7 +318,7 @@ class OWxpower(XoppyWidgetDabax):
         idx += 1 
         box1 = gui.widgetBox(box) 
         gui.comboBox(box1, self, "EL4_FLAG",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['Filter', 'Mirror'],
                      orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
@@ -359,7 +367,7 @@ class OWxpower(XoppyWidgetDabax):
         idx += 1 
         box1 = gui.widgetBox(box) 
         gui.comboBox(box1, self, "EL5_FLAG",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['Filter', 'Mirror'],
                      orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
@@ -401,9 +409,10 @@ class OWxpower(XoppyWidgetDabax):
         gui.separator(box1, height=7)
 
         gui.comboBox(box1, self, "PLOT_SETS",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['Local properties', 'Cumulated intensities', 'All'],
                      orientation="horizontal", labelWidth=250, callback=self.set_NELEMENTS)
+
         self.show_at(self.unitFlags()[idx], box1)
 
         #widget index 42
@@ -412,7 +421,7 @@ class OWxpower(XoppyWidgetDabax):
         gui.separator(box1, height=7)
 
         gui.comboBox(box1, self, "FILE_DUMP",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['No', 'Yes (power.spec)'],
                      orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -564,6 +573,72 @@ class OWxpower(XoppyWidgetDabax):
 
         except Exception as exception:
             QMessageBox.critical(self, "Error", str(exception), QMessageBox.Ok)
+
+
+    @Inputs.syned_data
+    def set_syned_data(self, syned_data):
+        self.receive_syned_data(syned_data)
+
+
+    def receive_syned_data(self, data):
+        if not data is None:
+            if isinstance(data, Beamline):
+                n = data.get_beamline_elements_number()
+                oe = data.get_beamline_element_at(n - 1).get_optical_element()
+                coor = data.get_beamline_element_at(n - 1).get_coordinates()
+
+                if isinstance(oe, Filter):
+                    self.NELEMENTS = 0
+                    self.EL1_FLAG = 0
+                    self.EL1_FOR = oe.get_material()
+                    self.EL1_THI = oe.get_thickness() * 1e3
+                elif isinstance(oe, Mirror):
+                    self.NELEMENTS = 0
+                    self.EL1_FLAG = 1
+                    if oe._coating is not None:
+                        self.EL1_FOR = oe._coating
+                    self.EL1_ANG = numpy.round( (numpy.pi / 2 - coor.angle_radial()) * 1e3, 4)
+                elif isinstance(oe, FilterBox):
+                    filter_box = oe
+                    m, t, d = filter_box.get_lists_materials_thicknesses_densities(cumulate=1)
+                    m_len = len(m)
+                    for i in range(m_len):
+                        print(i, m[i], t[i], d[i])
+
+                    self.NELEMENTS = m_len - 1
+                    for i in range(len(m)):
+                        if i == 0:
+                            self.EL1_FLAG = 0
+                            self.EL1_FOR = m[i]
+                            self.EL1_THI = t[i]
+                            self.EL1_DEN = str(d[i])
+                        if i == 1:
+                            self.EL2_FLAG = 0
+                            self.EL2_FOR = m[i]
+                            self.EL2_THI = t[i]
+                            self.EL2_DEN = str(d[i])
+                        if i == 2:
+                            self.EL3_FLAG = 0
+                            self.EL3_FOR = m[i]
+                            self.EL3_THI = t[i]
+                            self.EL3_DEN = str(d[i])
+                        if i == 3:
+                            self.EL4_FLAG = 0
+                            self.EL4_FOR = m[i]
+                            self.EL4_THI = t[i]
+                            self.EL4_DEN = str(d[i])
+                        if i == 4:
+                            self.EL5_FLAG = 0
+                            self.EL5_FOR = m[i]
+                            self.EL5_THI = t[i]
+                            self.EL5_DEN = str(d[i])
+                        if i > 4:
+                            raise ValueError("Maximum number of filters is 5. Found found filters with %d different materials" % m_len)
+                else:
+                    raise ValueError("Syned optical element not valid")
+            else:
+                raise ValueError("Syned data not correct")
+            self.set_NELEMENTS()
 
     def check_fields(self):
 
@@ -1037,9 +1112,10 @@ if True:
 
 add_widget_parameters_to_module(__name__)
 
-'''
+
 if __name__ == "__main__":
     import sys
+    from AnyQt.QtWidgets import QApplication
     input_type = 0
 
     if input_type == 1:
@@ -1089,5 +1165,5 @@ if __name__ == "__main__":
         w.show()
         app.exec()
         w.saveSettings()
-'''
+
 

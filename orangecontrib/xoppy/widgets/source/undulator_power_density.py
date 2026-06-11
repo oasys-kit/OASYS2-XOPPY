@@ -216,7 +216,7 @@ class OWundulator_power_density(XoppyWidget, WidgetDecorator):
         idx += 1 
         box1 = gui.widgetBox(box) 
         gui.comboBox(box1, self, "METHOD", label=self.unitLabels()[idx],
-                     items=['US', 'URGENT', 'SRW'], orientation="horizontal", labelWidth=250)
+                     items=['US', 'URGENT', 'SRW', 'KIM (python)'], orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1) 
 
         #
@@ -594,3 +594,11 @@ if True:
                 self.id_KPHASE.setEnabled(False)
 
 add_widget_parameters_to_module(__name__)
+if __name__ == "__main__":
+    import sys
+    from AnyQt.QtWidgets import QApplication
+    a = QApplication(sys.argv)
+    ow = OWundulator_power_density()
+    ow.show()
+    a.exec()
+    ow.saveSettings()
