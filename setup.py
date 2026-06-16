@@ -8,7 +8,7 @@ except AttributeError:
     from setuptools import find_packages, setup
 
 NAME = 'OASYS2-XOPPY'
-VERSION = '1.0.20'
+VERSION = '1.0.21'
 ISRELEASED = False
 
 DESCRIPTION = 'XOPPY: XOP (X-ray oriented programs) in Python'
@@ -37,7 +37,7 @@ CLASSIFIERS = [
 
 INSTALL_REQUIRES = (
     'oasys2>=0.0.42',
-    'xoppylib>=1.0.55',
+    'xoppylib>=1.0.56',
 )
 
 PACKAGES = find_packages(exclude=('*.tests', '*.tests.*', 'tests.*', 'tests'))

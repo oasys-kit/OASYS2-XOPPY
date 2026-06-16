@@ -123,7 +123,7 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
         idx += 1
         box1 = gui.widgetBox(box11)
         gui.comboBox(box1, self, "INPUT_BEAM_FROM",
-                    label=self.unitLabels()[idx], addSpace=False,
+                    label=self.unitLabels()[idx],
                     items=['Oasys wire','h5 file (from undulator_radiation)'],
                      orientation="horizontal", callback=self.visibility_input_file, labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -143,7 +143,7 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
         idx += 1
         box1 = gui.widgetBox(box11)
         gui.comboBox(box1, self, "EL1_FLAG",
-                    label=self.unitLabels()[idx], addSpace=False,
+                    label=self.unitLabels()[idx],
                     items=['Filter', 'Mirror','Aperture','Magnifier','Screen Rotation',"Thin object filter","Multilayer","Reflectivity from file"],
                      orientation="horizontal", callback=self.set_EL_FLAG, labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -169,19 +169,19 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
             box1 = gui.widgetBox(box11)
             if el == "EL1_DEF":
                 gui.comboBox(box1, self, el,
-                             label=self.unitLabels()[idx], addSpace=False,
+                             label=self.unitLabels()[idx],
                              items=['Horizontal',
                                     'Vertical'],
                               orientation="horizontal", labelWidth=250)
             elif el == "EL1_GAPSHAPE":
                 gui.comboBox(box1, self, el,
-                             label=self.unitLabels()[idx], addSpace=False,
+                             label=self.unitLabels()[idx],
                              items=['Rectangle',
                                     'Ellipse'],
                               orientation="horizontal", labelWidth=250)
             elif el == "thin_object_back_profile_flag":
                 gui.comboBox(box1, self, el,
-                             label=self.unitLabels()[idx], addSpace=False,
+                             label=self.unitLabels()[idx],
                              items=['zero',
                                     'from h5 file'],
                               orientation="horizontal", labelWidth=250)
@@ -211,7 +211,7 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
         gui.separator(box1, height=7)
 
         gui.comboBox(box1, self, "PLOT_SETS",
-                    label=self.unitLabels()[idx], addSpace=False,
+                    label=self.unitLabels()[idx],
                     items=['Input Beam',
                            'Element transmittance and absorbance',
                            'Absorbed by element',
@@ -228,7 +228,7 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
         box1 = gui.widgetBox(box)
         gui.separator(box1, height=7)
         gui.comboBox(box1, self, "FILE_INPUT_FLAG",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['No', 'Yes (hdf5)'],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -252,7 +252,7 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
         gui.separator(box1, height=7)
 
         gui.comboBox(box1, self, "FILE_DUMP",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                     items=['No', 'Yes (hdf5)','Yes (x,y,absorption)', 'Yes (absorption matrix)'],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
@@ -274,7 +274,7 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
         box1 = gui.widgetBox(box)
         gui.separator(box1, height=7)
         gui.comboBox(box1, self, "EL1_SLIT_CROP",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                      items=['No',
                             'Yes'],
                      orientation="horizontal", labelWidth=250)
@@ -285,7 +285,7 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
         box1 = gui.widgetBox(box)
         gui.separator(box1, height=7)
         gui.comboBox(box1, self, "INTERPOLATION_FLAG",
-                     label=self.unitLabels()[idx], addSpace=False,
+                     label=self.unitLabels()[idx],
                      items=['No',
                             'Yes'],
                      orientation="horizontal", labelWidth=250)
@@ -454,7 +454,7 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
                     raise Exception("Exchange data must be XOPPY data")
 
                 name = exchangeData.get_widget_name()
-                if name in ["UNDULATOR_RADIATION", "WIGGLER_RADIATION", "POWER3DCOMPONENT"]:
+                if name in ["UNDULATOR_RADIATION", "WIGGLER_RADIATION", "POWER3DCOMPONENT", "UNDULATOR_POWER_DENSITY_FROM_HARMONICS"]:
                     try:
                         self.input_beam = exchangeData
                         self.output_beam = None
@@ -600,7 +600,6 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
             self.load_input_file()
 
         p0, e0, h0, v0 = self.input_beam.get_content("xoppy_data")
-
         if self.FILE_INPUT_FLAG:
             write_radiation_to_h5file(e0, h0, v0, p0,
                                    creator="power3Dcomponent.py",
@@ -676,43 +675,56 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
         else:
             dens = "%g" % self.EL1_DEN
 
+        if len(e0.shape) == 1: # vs energy
+            str_bw = "/eV"
+            str_transmitted = "p2D_transmitted = numpy.trapezoid(p_transmitted, e0, axis=0)"
+            str_absorbed = "p2D_absorbed = numpy.trapezoid(p_absorbed, E, axis=0)"
+        else: # vs harmonic
+            str_bw = ""
+            str_transmitted = "p2D_transmitted = numpy.sum(p_transmitted, axis=0)"
+            str_absorbed = "p2D_absorbed = numpy.sum(p_absorbed, axis=0)"
+
+
         dict_parameters = {
-                "emin" :    e0[0],
-                "emax" :    e0[-1],
-                "epoints" : e0.size,
-                "hmin" :    h0[0],
-                "hmax" :    h0[-1],
-                "hpoints" : h0.size,
-                "vmin" :    v0[0],
-                "vmax" :    v0[-1],
-                "vpoints" : v0.size,
-                "EL1_FOR" : "'"+self.EL1_FOR+"'",
-                "EL1_THI" : self.EL1_THI,
-                "EL1_ANG" : self.EL1_ANG,
-                "EL1_DEF" : self.EL1_DEF,
-                "EL1_DEN" : dens,
-                "EL1_ROU" : self.EL1_ROU,
-                "EL1_FLAG" : self.EL1_FLAG,
-                "hgap" : hgap,
-                "vgap" : vgap,
+                "emin"       :    e0.min(), # e0[0],
+                "emax"       :    e0.max(), # e0[-1],
+                "epoints"    : e0.shape[0], # e0.size,
+                "hmin"       :    h0[0],
+                "hmax"       :    h0[-1],
+                "hpoints"    : h0.size,
+                "vmin"       :    v0[0],
+                "vmax"       :    v0[-1],
+                "vpoints"    : v0.size,
+                "EL1_FOR"    : "'"+self.EL1_FOR+"'",
+                "EL1_THI"    : self.EL1_THI,
+                "EL1_ANG"    : self.EL1_ANG,
+                "EL1_DEF"    : self.EL1_DEF,
+                "EL1_DEN"    : dens,
+                "EL1_ROU"    : self.EL1_ROU,
+                "EL1_FLAG"   : self.EL1_FLAG,
+                "hgap"       : hgap,
+                "vgap"       : vgap,
                 "hgapcenter" : hgapcenter,
                 "vgapcenter" : vgapcenter,
-                "hmag" : hmag,
-                "vmag" : vmag,
-                "hrot" : hrot,
-                "vrot" : vrot,
-                "FILE_INPUT_NAME": self.FILE_INPUT_NAME,
-                "INTERPOLATION_FLAG" : self.INTERPOLATION_FLAG,
+                "hmag"       : hmag,
+                "vmag"       : vmag,
+                "hrot"       : hrot,
+                "vrot"       : vrot,
+                "FILE_INPUT_NAME"        : self.FILE_INPUT_NAME,
+                "INTERPOLATION_FLAG"     : self.INTERPOLATION_FLAG,
                 "INTERPOLATION_FACTOR_H" : self.INTERPOLATION_FACTOR_H,
                 "INTERPOLATION_FACTOR_V" : self.INTERPOLATION_FACTOR_V,
-                "EL1_SLIT_CROP" : self.EL1_SLIT_CROP,
-                "thin_object_file" : thin_object_file,
+                "EL1_SLIT_CROP"          : self.EL1_SLIT_CROP,
+                "thin_object_file"       : thin_object_file,
                 "thin_object_thickness_outside_file_area" : thin_object_thickness_outside_file_area,
-                "thin_object_back_profile_flag": thin_object_back_profile_flag,
-                "thin_object_back_profile_file": thin_object_back_profile_file,
-                "multilayer_file":  multilayer_file,
-                "external_reflectivity_file": external_reflectivity_file,
-                "material_constants_library": material_constants_library_str,
+                "thin_object_back_profile_flag"           : thin_object_back_profile_flag,
+                "thin_object_back_profile_file"           : thin_object_back_profile_file,
+                "multilayer_file"                         :  multilayer_file,
+                "external_reflectivity_file"              : external_reflectivity_file,
+                "material_constants_library"              : material_constants_library_str,
+                "str_bw"                                  : str_bw,
+                "str_transmitted"                         : str_transmitted,
+                "str_absorbed"                            : str_absorbed,
             }
 
         if self.input_beam is not None:
@@ -755,6 +767,7 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
                                   material_constants_library=material_constants_library,
                                   )
 
+
         txt += info_total_power(p0, e0, v0, h0, transmittance, absorbance, EL1_FLAG=self.EL1_FLAG)
         print(txt)
 
@@ -788,7 +801,6 @@ try: import xraylib
 except: print("xraylib not available")
 from dabax.dabax_xraylib import DabaxXraylib
 from xoppylib.power.power3d import calculate_component_absorbance_and_transmittance
-from xoppylib.power.power3d import apply_transmittance_to_incident_beam
 
 # compute local transmittance and absorbance
 e0, h0, v0, f0  = energy, horizontal, vertical, flux3D
@@ -820,25 +832,29 @@ transmittance, absorbance, E, H, V, txt = calculate_component_absorbance_and_tra
                 material_constants_library = {material_constants_library},
                 )
 
-# apply transmittance to incident beam 
-f_transmitted, e, h, v = apply_transmittance_to_incident_beam(transmittance, f0, e0, h0, v0,
-                flags = {EL1_FLAG},
-                hgap = {hgap},
-                vgap = {vgap},
-                hgapcenter = {hgapcenter},
-                vgapcenter = {vgapcenter},
-                hmag = {hmag},
-                vmag = {vmag},
-                interpolation_flag     = {INTERPOLATION_FLAG},
-                interpolation_factor_h = {INTERPOLATION_FACTOR_H},
-                interpolation_factor_v = {INTERPOLATION_FACTOR_V},
-                slit_crop = {EL1_SLIT_CROP},
-                )
 
-f_absorbed = f0 * absorbance / (H[0] / h0[0]) / (V[0] / v0[0])
 
-# data to pass
-energy, horizontal, vertical, flux3D = e, h, v, f_transmitted
+if False:
+    # compute data to send 
+    from xoppylib.power.power3d import apply_transmittance_to_incident_beam
+    # apply transmittance to incident beam 
+    f_transmitted, e, h, v = apply_transmittance_to_incident_beam(transmittance, f0, e0, h0, v0,
+                    flags = {EL1_FLAG},
+                    hgap = {hgap},
+                    vgap = {vgap},
+                    hgapcenter = {hgapcenter},
+                    vgapcenter = {vgapcenter},
+                    hmag = {hmag},
+                    vmag = {vmag},
+                    interpolation_flag     = {INTERPOLATION_FLAG},
+                    interpolation_factor_h = {INTERPOLATION_FACTOR_H},
+                    interpolation_factor_v = {INTERPOLATION_FACTOR_V},
+                    slit_crop = {EL1_SLIT_CROP},
+                    )
+    
+    
+    # data to pass
+    energy, horizontal, vertical, flux3D = e, h, v, f_transmitted
 
 #                       
 # example plots
@@ -848,30 +864,31 @@ if True:
     import scipy.constants as codata
     from xoppylib.power.power3d import integral_2d
     
-    # transmitted/reflected beam
+    print(">>>>>>>>>>>>>>>>", h0.max(), H.max(), v0.max(), V.max())
+
+    # transmitted/reflected beam   
+    p_transmitted = f0 * transmittance * codata.e * 1e3
+    print(">>>>> f0: ", f0.max(), f0.min())
+    print(">>>>> p_transmitted: ", p_transmitted.max(), p_transmitted.min(), transmittance.max(), transmittance.min())
+    plot_image(p_transmitted[0,:,:],h0,v0,title="Transmitted Spectral Power Density [W{str_bw}/mm2] at lower energy",xtitle="H [mm] (normal to beam)",ytitle="V [mm] (normal to beam)",aspect='auto')
     
-    spectral_power_transmitted = f_transmitted * codata.e * 1e3     
-    plot_image(spectral_power_transmitted[0,:,:],h,v,title="Transmitted Spectral Power Density [W/eV/mm2] at E=%g eV" % ({emin}),xtitle="H [mm]",ytitle="V [mm]",aspect='auto')
-    
-    power_density_transmitted = numpy.trapezoid(spectral_power_transmitted, e, axis=0)
-    power_density_integral = integral_2d(power_density_transmitted, h, v)
-    plot_image(power_density_transmitted, h, v,
+    {str_transmitted}
+    plot_image(p2D_transmitted, h0, v0,
                      xtitle='H [mm] (normal to beam)',
                      ytitle='V [mm] (normal to beam)',
-                     title='Power Density [W/mm^2]. Integral: %6.3f W'%power_density_integral,aspect='auto')
+                     title='Transmitted/Reflected Power Density [W/mm^2].',aspect='auto')
     
-    # local absorption 
+    # local absorption
+    p_absorbed = f0 * absorbance / (H[0] / h0[0]) / (V[0] / v0[0]) * codata.e * 1e3
+    print(">>>>> f0: ", f0.max(), f0.min())
+    print(">>>>> p_absorbed: ", p_absorbed.max(), p_absorbed.min(), absorbance.max(), absorbance.min())
+    plot_image(p_absorbed[0,:,:],H,V,title="Absorbed Spectral Power Density [W{str_bw}/mm2] at lower energy",xtitle="H [mm] (o.e. coordinates)",ytitle="V [mm] (o.e. coordinates)",aspect='auto')
     
-    spectral_power_density_absorbed = f_absorbed * codata.e * 1e3
-    
-    plot_image(spectral_power_density_absorbed[0,:,:],H,V,title="Absorbed Spectral Power Density [W/eV/mm2] at E=%g eV" % ({emin}),xtitle="H [mm]",ytitle="V [mm]",aspect='auto')
-    
-    power_density_absorbed = numpy.trapezoid(spectral_power_density_absorbed, E, axis=0)
-    power_density_integral = integral_2d(power_density_absorbed, H, V)
-    plot_image(power_density_absorbed, H, V,
+    {str_absorbed}
+    plot_image(p2D_absorbed, H, V,
                      xtitle='H [mm] (o.e. coordinates)',
                      ytitle='V [mm] (o.e. coordinates)',
-                     title='Absorbed Power Density [W/mm^2]. Integral: %6.3f W'%power_density_integral,aspect='auto')
+                     title='Absorbed Power Density [W/mm^2].',aspect='auto')
                                                
 #
 # end script
@@ -964,6 +981,19 @@ if True:
             if calculated_data is None:
                 raise Exception("Empty data")
 
+            p0, e0, h0, v0 = self.input_beam.get_content("xoppy_data")
+            if len(e0.shape) == 1:
+                self.plot_results_vs_energy(calculated_data, progressBarValue)
+            else:
+                self.plot_results_vs_harmonics(calculated_data, progressBarValue)
+
+
+    def plot_results_vs_energy(self, calculated_data, progressBarValue=80):
+        current_index = self.tabs.currentIndex()
+        if not self.view_type == 0:
+            if calculated_data is None:
+                raise Exception("Empty data")
+
             self.initializeTabs() # added by srio to avoid overlapping graphs
 
             self.view_type_combo.setEnabled(False)
@@ -977,6 +1007,8 @@ if True:
 
             transmittance, absorbance, E, H, V = calculated_data.get_content("xoppy_transmittivity")
 
+            print(">>>>>>>>>>>>>>>>>>>>>>", h.max(), v.max(), H.max(), V.max())
+
             if self.EL1_FLAG == 3:  # magnifier  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                 h *= self.EL1_HMAG
                 v *= self.EL1_VMAG
@@ -984,8 +1016,8 @@ if True:
             if self.PLOT_SETS == 0:  # source
                 # plot result s E,X,Y
                 self.plot_data3D(p_spectral_power, e0, h0, v0, 0, 0,
-                                 xtitle='H [mm]',
-                                 ytitle='V [mm]',
+                                 xtitle='H [mm] (normal to beam)',
+                                 ytitle='V [mm] (normal to beam)',
                                  title='Input beam Spectral power density[W/eV/mm^2]',
                                  color_limits_uniform=False)
                 self.tabs.setCurrentIndex(0)
@@ -1007,7 +1039,6 @@ if True:
                                  title='Input beam Spectral power. Integral: %6.3f W'%spectral_density_integral,)
 
                 # plot flux vs E
-                # spectral_density = numpy.trapezoid(numpy.trapezoid(p_spectral_power, v0, axis=2), h0, axis=1)
                 flux = spectral_density / (codata.e * 1e3)
                 self.plot_data1D(e, flux, 3, 0,
                                  xtitle='Photon Energy [eV]',
@@ -1032,7 +1063,6 @@ if True:
                                  xtitle='Photon Energy [eV]',
                                  ytitle=ytitle,
                                  title='Integrated '+ytitle,)
-                # self.tabs.setCurrentIndex(1)
 
                 # plot absorbance stack
                 self.plot_data3D(absorbance, E, H, V, 2, 0,
@@ -1073,7 +1103,6 @@ if True:
                                  title='Absorbed Spectral Power. Integral: %6.3f W'%spectral_density_integral, )
 
                 # plot flux vs E
-                # spectral_density = numpy.trapezoid(numpy.trapezoid(p_absorbed, V, axis=2), H, axis=1)
                 flux = spectral_density / (codata.e * 1e3)
                 self.plot_data1D(e, flux, 3, 0,
                                  xtitle='Photon Energy [eV]',
@@ -1115,6 +1144,230 @@ if True:
                 # spectral_density = numpy.trapezoid(numpy.trapezoid(p_transmitted, v, axis=2), h, axis=1)
                 flux = spectral_density / (codata.e * 1e3)
                 self.plot_data1D(e, flux, 3, 0,
+                                 xtitle='Photon Energy [eV]',
+                                 ytitle='Flux [Photons/s/0.1%bw]',
+                                 title=tr_ref_txt+' Flux', xlog=True, ylog=True)
+
+            self.view_type_combo.setEnabled(True)
+
+            try:
+                self.tabs.setCurrentIndex(current_index)
+            except:
+                pass
+
+    def plot_results_vs_harmonics(self, calculated_data, progressBarValue=80):
+        current_index = self.tabs.currentIndex()
+        if not self.view_type == 0:
+            if calculated_data is None:
+                raise Exception("Empty data")
+
+            self.initializeTabs() # added by srio to avoid overlapping graphs
+
+            self.view_type_combo.setEnabled(False)
+
+            de = 100  # eV
+            p0, e0, h0, v0 = self.input_beam.get_content("xoppy_data")
+            p = p0.copy()
+            p_spectral_power = p * codata.e * 1e3
+            h = h0.copy()
+            v = v0.copy()
+            step_h = h[1] - h[0]
+            step_v = v[1] - v[0]
+            step_hv = step_h * step_v
+
+            e = (e0[:, e0.shape[1]//2, e0.shape[1]//2]).copy()
+            title_callback_light = lambda idx: ("Harmonic %d" % idx)
+
+
+            transmittance, absorbance, E_in, H, V = calculated_data.get_content("xoppy_transmittivity")
+            E = (E_in[:, E_in.shape[1]//2, E_in.shape[1]//2]).copy()
+
+            if self.EL1_FLAG == 3:  # magnifier  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                h *= self.EL1_HMAG
+                v *= self.EL1_VMAG
+
+            # plot Input beam  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            if self.PLOT_SETS == 0:  # source
+                title_callback = lambda idx: ("Harmonic %d (on-axis energy: %6.3f eV, power: %.1f W)" %
+                                              (idx, e[idx], integral_2d(p_spectral_power[idx], h0, v0)))
+
+
+                # plot result s E,X,Y
+                self.plot_data3D(p_spectral_power, e, h0, v0, 0, 0,
+                                 xtitle='H [mm]',
+                                 ytitle='V [mm]',
+                                 title='Input beam Spectral power density[W/eV/mm^2]',
+                                 color_limits_uniform=False,
+                                 title_callback=title_callback)
+                self.tabs.setCurrentIndex(0)
+
+                # plot result vs X,Y
+                power_density = numpy.sum(p_spectral_power, axis=0)
+
+                power_density_integral = integral_2d(power_density, h0, v0)
+
+                self.plot_data2D(power_density, h0, v0, 1, 0,
+                                 xtitle='H [mm]',
+                                 ytitle='V [mm]',
+                                 title='Input beam Power density [W/mm^2]. Integral: %6.3f W'%power_density_integral,)
+
+                # plot result vs E
+                energies = e0.flatten()  # Flatten all energy values
+                powers = p_spectral_power.flatten() * step_hv # Flatten corresponding power contributions
+
+                e_bins = numpy.arange(energies.min(), energies.max() + de, de)
+                print("Spectrum calculated from histogramming in photon energy:"
+                      "\n min: %g eV, max: %g eV, delta: %g eV, n_bins: %d " %
+                      (e0.min(), e0.max(), de, e_bins.size))
+
+                # Bin the powers into energy bins
+                spectral_density, bin_edges = numpy.histogram(energies, bins=e_bins, weights=powers)
+                bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+                self.plot_data1D(bin_centers, spectral_density / de, 2, 0,
+                                 xtitle='Photon Energy [eV]',
+                                 ytitle='Spectral power [W/eV]',
+                                 title='Input beam Spectral power. Bin: %.1f eV. Integral: %6.3f W' % (de, power_density_integral), )
+
+                # plot flux vs E
+                flux = (spectral_density / de) / (codata.e * 1e3)
+                self.plot_data1D(bin_centers, flux, 3, 0,
+                                 xtitle='Photon Energy [eV]',
+                                 ytitle= 'Flux [Photons/s/0.1%bw]',
+                                 title='Input beam Flux', xlog=True, ylog=True)
+
+            # plot Element Transmittance and Absorbance <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            if self.PLOT_SETS == 1:  # transmittance & absorbance
+                # plot transmittance stack
+                self.plot_data3D(transmittance, e, h, v, 0, 0,
+                                 xtitle='H [mm] (normal to beam)',
+                                 ytitle='V [mm] (normal to beam)',
+                                 color_limits_uniform=True,
+                                 title_callback=title_callback_light)
+                self.tabs.setCurrentIndex(0)
+
+                # plot absorbance stack
+                self.plot_data3D(absorbance, E, H, V, 2, 0,
+                                 xtitle='H [mm] (o.e. coordinates)',
+                                 ytitle='V [mm] (o.e. coordinates)',
+                                 color_limits_uniform=True,
+                                 title_callback=title_callback_light)
+
+                # plot transmittance spectrum
+                if self.EL1_FLAG == 1:
+                    ytitle = "Reflectance"
+                else:
+                    ytitle = "Transmittance"
+
+                f_e0 = e0.flatten()  # Flatten all energy values
+                self.plot_data1D(f_e0, transmittance.flatten(), 1, 0,
+                                 xtitle='Photon Energy [eV]',
+                                 ytitle=ytitle,
+                                 title=ytitle,)
+                self.plot_data1D(f_e0, absorbance.flatten(), 3, 0,
+                                 xtitle='Photon Energy [eV]',
+                                 ytitle='Absorbance',
+                                 title='Absorbance',)
+
+
+            # plot Absorbed by element  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            if self.PLOT_SETS == 2:  # absorption by element
+                p_absorbed = p_spectral_power * absorbance / (H[0] / h0[0]) / (V[0] / v0[0])
+                # plot result vs E,X,Y
+                title_callback = lambda idx: ("Harmonic %d (on-axis energy: %6.3f eV, power: %.1f W)" %
+                                              (idx, e[idx], integral_2d(p_absorbed[idx], h0, v0)))
+                print(">>>>> f0: ", p0.max(), p0.min())
+                print(">>>>> p_absorbed: ", p_absorbed.max(), p_absorbed.min(), absorbance.max(), absorbance.min())
+                self.plot_data3D(p_absorbed, E, H, V, 0, 0,
+                                 xtitle='H [mm] (o.e. coordinates)',
+                                 ytitle='V [mm] (o.e. coordinates)',
+                                 title='Absorbed Power Density[W/mm^2]',
+                                 color_limits_uniform=False,
+                                 title_callback=title_callback)
+                self.tabs.setCurrentIndex(0)
+
+                # plot result vs X,Y
+                power_density = numpy.sum(p_absorbed, axis=0)
+                power_density_integral = integral_2d(power_density, H, V)
+                self.plot_data2D(power_density, H, V, 1, 0,
+                                 xtitle='H [mm] (o.e. coordinates)',
+                                 ytitle='V [mm] (o.e. coordinates)',
+                                 title='Absorbed Power Density [W/mm^2]. Integral: %6.3f W' % power_density_integral, )
+
+                # plot result vs E
+                energies = e0.flatten()  # Flatten all energy values
+                weights = (p_spectral_power * absorbance).flatten() * step_hv # Flatten corresponding power contributions
+
+                e_bins = numpy.arange(energies.min(), energies.max() + de, de)
+                print("Spectrum calculated from histogramming in photon energy:"
+                      "\n min: %g eV, max: %g eV, delta: %g eV, n_bins: %d " %
+                      (e0.min(), e0.max(), de, e_bins.size))
+
+                # Bin the powers into energy bins
+                spectral_density_histo, bin_edges = numpy.histogram(energies, bins=e_bins, weights=weights)
+                bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+
+                self.plot_data1D(bin_centers, spectral_density_histo / de, 2, 0,
+                                 xtitle='Photon Energy [eV]',
+                                 ytitle='Spectral power [W/eV]',
+                                 title='Absorbed Power', )
+
+                # plot flux vs E
+                flux = (spectral_density_histo / de) / (codata.e * 1e3)
+                self.plot_data1D(bin_centers, flux, 3, 0,
+                                 xtitle='Photon Energy [eV]',
+                                 ytitle='Flux [Photons/s/0.1%bw]',
+                                 title='Absorbed Flux', xlog=True, ylog=True)
+
+
+            # Trsnamitted/reflected by element  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            if self.PLOT_SETS == 3:  # transmitted/reflected by element
+                p_transmitted = p_spectral_power * transmittance / (h[0] / h0[0]) / (v[0] / v0[0])
+                print(">>>>> p_transmitted: ", p_transmitted.max(), p_transmitted.min(), transmittance.max(), transmittance.min())
+                if self.EL1_FLAG == 1:
+                    tr_ref_txt = "Reflected"
+                else:
+                    tr_ref_txt = "Transmitted"
+
+                # plot result s E,X,Y
+                title_callback = lambda idx: ("Harmonic %d (on-axis energy: %6.3f eV, power: %.1f W)" %
+                                              (idx, e[idx], integral_2d(p_transmitted[idx], h0, v0)))
+                self.plot_data3D(p_transmitted, e, h, v, 0, 0,
+                                 xtitle='H [mm] (normal to beam)',
+                                 ytitle='V [mm] (normal to beam)',
+                                 title=tr_ref_txt+' Spectral Power Density[W/eV/mm^2]',
+                                 color_limits_uniform=False,
+                                 title_callback=title_callback)
+                self.tabs.setCurrentIndex(0)
+
+                power_density = numpy.sum(p_transmitted, axis=0)
+                power_density_integral = integral_2d(power_density, h, v)
+                self.plot_data2D(power_density, h, v, 1, 0,
+                                 xtitle='H [mm] (normal to beam)',
+                                 ytitle='V [mm] (normal to beam)',
+                                 title=tr_ref_txt+' Power Density [W/mm^2]. Integral: %6.3f W'%power_density_integral, )
+
+                # plot result vs E
+                energies = e0.flatten()  # Flatten all energy values
+                weights = p_transmitted.flatten() * step_hv  # Flatten corresponding power contributions
+
+                e_bins = numpy.arange(energies.min(), energies.max() + de, de)
+                print("Spectrum calculated from histogramming in photon energy:"
+                      "\n min: %g eV, max: %g eV, delta: %g eV, n_bins: %d " %
+                      (e0.min(), e0.max(), de, e_bins.size))
+
+                # Bin the powers into energy bins
+                spectral_density_histo, bin_edges = numpy.histogram(energies, bins=e_bins, weights=weights)
+                bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+
+
+                self.plot_data1D(bin_centers, spectral_density_histo / de, 2, 0,
+                                 xtitle='Photon Energy [eV]',
+                                 ytitle='Spectral power [W/eV]',
+                                 title=tr_ref_txt+' Spectral Power.')
+
+                # plot flux vs E
+                flux = (spectral_density_histo / de) / (codata.e * 1e3)
+                self.plot_data1D(bin_centers, flux, 3, 0,
                                  xtitle='Photon Energy [eV]',
                                  ytitle='Flux [Photons/s/0.1%bw]',
                                  title=tr_ref_txt+' Flux', xlog=True, ylog=True)
@@ -1176,80 +1429,185 @@ if True:
 
 add_widget_parameters_to_module(__name__)
 
-'''
+
 if __name__ == "__main__":
+    from AnyQt.QtWidgets import QMessageBox, QApplication
 
-    # # create unulator_radiation xoppy exchange data
-    # from xoppylib.xoppy_undulators import xoppy_calc_undulator_radiation
-    # from oasys.widgets.exchange import DataExchangeObject
-    #
-    # e, h, v, p, code = xoppy_calc_undulator_radiation(ELECTRONENERGY=6.04,ELECTRONENERGYSPREAD=0.001,ELECTRONCURRENT=0.2,\
-    #                                    ELECTRONBEAMSIZEH=0.000395,ELECTRONBEAMSIZEV=9.9e-06,\
-    #                                    ELECTRONBEAMDIVERGENCEH=1.05e-05,ELECTRONBEAMDIVERGENCEV=3.9e-06,\
-    #                                    PERIODID=0.018,NPERIODS=222,KV=1.68,DISTANCE=30.0,
-    #                                    SETRESONANCE=0,HARMONICNUMBER=1,
-    #                                    GAPH=0.001,GAPV=0.001,\
-    #                                    HSLITPOINTS=41,VSLITPOINTS=41,METHOD=2,
-    #                                    PHOTONENERGYMIN=7000,PHOTONENERGYMAX=8100,PHOTONENERGYPOINTS=20,
-    #                                    USEEMITTANCES=1)
-    #
-    # received_data = DataExchangeObject("XOPPY", "Power3Dcomponent")
-    # received_data.add_content("xoppy_data", [p, e, h, v])
-    # received_data.add_content("xoppy_code", code)
+    if 1:
+        # # create unulator_radiation xoppy exchange data
+        # from xoppylib.xoppy_undulators import xoppy_calc_undulator_radiation
+        # from oasys.widgets.exchange import DataExchangeObject
+        #
+        # e, h, v, p, code = xoppy_calc_undulator_radiation(ELECTRONENERGY=6.04,ELECTRONENERGYSPREAD=0.001,ELECTRONCURRENT=0.2,\
+        #                                    ELECTRONBEAMSIZEH=0.000395,ELECTRONBEAMSIZEV=9.9e-06,\
+        #                                    ELECTRONBEAMDIVERGENCEH=1.05e-05,ELECTRONBEAMDIVERGENCEV=3.9e-06,\
+        #                                    PERIODID=0.018,NPERIODS=222,KV=1.68,DISTANCE=30.0,
+        #                                    SETRESONANCE=0,HARMONICNUMBER=1,
+        #                                    GAPH=0.001,GAPV=0.001,\
+        #                                    HSLITPOINTS=41,VSLITPOINTS=41,METHOD=2,
+        #                                    PHOTONENERGYMIN=7000,PHOTONENERGYMAX=8100,PHOTONENERGYPOINTS=20,
+        #                                    USEEMITTANCES=1)
+        #
+        # received_data = DataExchangeObject("XOPPY", "Power3Dcomponent")
+        # received_data.add_content("xoppy_data", [p, e, h, v])
+        # received_data.add_content("xoppy_code", code)
 
-    # create wiggler_radiation xoppy exchange data
-    from xoppylib.sources.xoppy_bm_wiggler import xoppy_calc_wiggler_radiation
+        # create wiggler_radiation xoppy exchange data
+        from xoppylib.sources.xoppy_bm_wiggler import xoppy_calc_wiggler_radiation
 
-    h5_parameters = dict()
-    h5_parameters["ELECTRONENERGY"] = 3.0
-    h5_parameters["ELECTRONCURRENT"] = 0.1
-    h5_parameters["PERIODID"] = 0.12
-    h5_parameters["NPERIODS"] = 37.0
-    h5_parameters["KV"] = 22.416
-    h5_parameters["FIELD"] = 0  # 0= sinusoidal, 1=from file
-    h5_parameters["FILE"] = ''
-    h5_parameters["POLARIZATION"] = 0  # 0=total, 1=s, 2=p
-    h5_parameters["DISTANCE"] = 30.0
-    h5_parameters["HSLITPOINTS"] = 500
-    h5_parameters["VSLITPOINTS"] = 500
-    h5_parameters["PHOTONENERGYMIN"] = 29000.0 # 100.0
-    h5_parameters["PHOTONENERGYMAX"] = 39000.0 # 100100.0
-    h5_parameters["PHOTONENERGYPOINTS"] = 2
-    h5_parameters["SHIFT_X_FLAG"] = 0
-    h5_parameters["SHIFT_X_VALUE"] = 0.0
-    h5_parameters["SHIFT_BETAX_FLAG"] = 0
-    h5_parameters["SHIFT_BETAX_VALUE"] = 0.0
-    h5_parameters["CONVOLUTION"] = 1
+        h5_parameters = dict()
+        h5_parameters["ELECTRONENERGY"] = 3.0
+        h5_parameters["ELECTRONCURRENT"] = 0.1
+        h5_parameters["PERIODID"] = 0.12
+        h5_parameters["NPERIODS"] = 37.0
+        h5_parameters["KV"] = 22.416
+        h5_parameters["FIELD"] = 0  # 0= sinusoidal, 1=from file
+        h5_parameters["FILE"] = ''
+        h5_parameters["POLARIZATION"] = 0  # 0=total, 1=s, 2=p
+        h5_parameters["DISTANCE"] = 30.0
+        h5_parameters["HSLITPOINTS"] = 500
+        h5_parameters["VSLITPOINTS"] = 500
+        h5_parameters["PHOTONENERGYMIN"] = 29000.0 # 100.0
+        h5_parameters["PHOTONENERGYMAX"] = 39000.0 # 100100.0
+        h5_parameters["PHOTONENERGYPOINTS"] = 2
+        h5_parameters["SHIFT_X_FLAG"] = 0
+        h5_parameters["SHIFT_X_VALUE"] = 0.0
+        h5_parameters["SHIFT_BETAX_FLAG"] = 0
+        h5_parameters["SHIFT_BETAX_VALUE"] = 0.0
+        h5_parameters["CONVOLUTION"] = 1
 
-    e, h, v, p, traj = xoppy_calc_wiggler_radiation(
-        ELECTRONENERGY=h5_parameters["ELECTRONENERGY"],
-        ELECTRONCURRENT=h5_parameters["ELECTRONCURRENT"],
-        PERIODID=h5_parameters["PERIODID"],
-        NPERIODS=h5_parameters["NPERIODS"],
-        KV=h5_parameters["KV"],
-        FIELD=h5_parameters["FIELD"],
-        FILE=h5_parameters["FILE"],
-        POLARIZATION=h5_parameters["POLARIZATION"],
-        DISTANCE=h5_parameters["DISTANCE"],
-        HSLITPOINTS=h5_parameters["HSLITPOINTS"],
-        VSLITPOINTS=h5_parameters["VSLITPOINTS"],
-        PHOTONENERGYMIN=h5_parameters["PHOTONENERGYMIN"],
-        PHOTONENERGYMAX=h5_parameters["PHOTONENERGYMAX"],
-        PHOTONENERGYPOINTS=h5_parameters["PHOTONENERGYPOINTS"],
-        SHIFT_X_FLAG=h5_parameters["SHIFT_X_FLAG"],
-        SHIFT_X_VALUE=h5_parameters["SHIFT_X_VALUE"],
-        SHIFT_BETAX_FLAG=h5_parameters["SHIFT_BETAX_FLAG"],
-        SHIFT_BETAX_VALUE=h5_parameters["SHIFT_BETAX_VALUE"],
-        CONVOLUTION=h5_parameters["CONVOLUTION"],
-        h5_file="wiggler_radiation.h5",
-        h5_entry_name="XOPPY_RADIATION",
-        h5_initialize=True,
-        h5_parameters=h5_parameters,
-    )
-    print(p.shape)
-    received_data = DataExchangeObject("XOPPY", "WIGGLER_RADIATION")
-    received_data.add_content("xoppy_data", [p, e, h, v])
-    # received_data.add_content("xoppy_code", code)
+        e, h, v, p, traj = xoppy_calc_wiggler_radiation(
+            ELECTRONENERGY=h5_parameters["ELECTRONENERGY"],
+            ELECTRONCURRENT=h5_parameters["ELECTRONCURRENT"],
+            PERIODID=h5_parameters["PERIODID"],
+            NPERIODS=h5_parameters["NPERIODS"],
+            KV=h5_parameters["KV"],
+            FIELD=h5_parameters["FIELD"],
+            FILE=h5_parameters["FILE"],
+            POLARIZATION=h5_parameters["POLARIZATION"],
+            DISTANCE=h5_parameters["DISTANCE"],
+            HSLITPOINTS=h5_parameters["HSLITPOINTS"],
+            VSLITPOINTS=h5_parameters["VSLITPOINTS"],
+            PHOTONENERGYMIN=h5_parameters["PHOTONENERGYMIN"],
+            PHOTONENERGYMAX=h5_parameters["PHOTONENERGYMAX"],
+            PHOTONENERGYPOINTS=h5_parameters["PHOTONENERGYPOINTS"],
+            SHIFT_X_FLAG=h5_parameters["SHIFT_X_FLAG"],
+            SHIFT_X_VALUE=h5_parameters["SHIFT_X_VALUE"],
+            SHIFT_BETAX_FLAG=h5_parameters["SHIFT_BETAX_FLAG"],
+            SHIFT_BETAX_VALUE=h5_parameters["SHIFT_BETAX_VALUE"],
+            CONVOLUTION=h5_parameters["CONVOLUTION"],
+            h5_file="wiggler_radiation.h5",
+            h5_entry_name="XOPPY_RADIATION",
+            h5_initialize=True,
+            h5_parameters=h5_parameters,
+        )
+        print(p.shape)
+        received_data = DataExchangeObject("XOPPY", "WIGGLER_RADIATION")
+        received_data.add_content("xoppy_data", [p, e, h, v])
+        # received_data.add_content("xoppy_code", code)
+    else:
+
+        #
+        # script to make the calculations (created by XOPPY:undulator_spectrum)
+        #
+        from xoppylib.sources.xoppy_undulators import xoppy_calc_undulator_power_density_from_harmonics
+
+        # define inputs here to be written in h5 file
+        h5_parameters = dict()
+        h5_parameters["ELECTRONENERGY"] = 6.0
+        h5_parameters["ELECTRONENERGYSPREAD"] = 0.001
+        h5_parameters["ELECTRONCURRENT"] = 0.2
+        h5_parameters["ELECTRONBEAMSIZEH"] = 3.34281e-05
+        h5_parameters["ELECTRONBEAMSIZEV"] = 7.28139e-06
+        h5_parameters["ELECTRONBEAMDIVERGENCEH"] = 4.51097e-06
+        h5_parameters["ELECTRONBEAMDIVERGENCEV"] = 1.94034e-06
+        h5_parameters["PERIODID"] = 0.018
+        h5_parameters["NPERIODS"] = 111
+        h5_parameters["KV"] = 1.6563
+        h5_parameters["KH"] = 0.0
+        h5_parameters["KPHASE"] = 0.0
+        h5_parameters["DISTANCE"] = 23.0
+        h5_parameters["GAPH"] = 0.01
+        h5_parameters["GAPV"] = 0.01
+        h5_parameters["HSLITPOINTS"] = 51
+        h5_parameters["VSLITPOINTS"] = 51
+        h5_parameters["METHOD"] = 1  # 0=urgent (fortran), 1=urgentpy (python)
+        h5_parameters["USEEMITTANCES"] = 1
+        h5_parameters["MASK_FLAG"] = 0
+        h5_parameters["MASK_ROT_H_DEG"] = 0.0
+        h5_parameters["MASK_ROT_V_DEG"] = 0.0
+        h5_parameters["MASK_H_MIN"] = -1000.0
+        h5_parameters["MASK_H_MAX"] = 1000.0
+        h5_parameters["MASK_V_MIN"] = -1000.0
+        h5_parameters["MASK_V_MAX"] = 1000.0
+        h5_parameters["harmonic_max"] = 5  # maximum harmonic to calculate
+        h5_parameters["photon_energy_bin"] = 300.0  # in eV, for calculating Spectral Power
+
+        horizontal, vertical, power_density, code, power_density_harmonics, energy, spectral_power, spectral_power_energy, flux3D = xoppy_calc_undulator_power_density_from_harmonics(
+            ELECTRONENERGY=h5_parameters["ELECTRONENERGY"],
+            ELECTRONENERGYSPREAD=h5_parameters["ELECTRONENERGYSPREAD"],
+            ELECTRONCURRENT=h5_parameters["ELECTRONCURRENT"],
+            ELECTRONBEAMSIZEH=h5_parameters["ELECTRONBEAMSIZEH"],
+            ELECTRONBEAMSIZEV=h5_parameters["ELECTRONBEAMSIZEV"],
+            ELECTRONBEAMDIVERGENCEH=h5_parameters["ELECTRONBEAMDIVERGENCEH"],
+            ELECTRONBEAMDIVERGENCEV=h5_parameters["ELECTRONBEAMDIVERGENCEV"],
+            PERIODID=h5_parameters["PERIODID"],
+            NPERIODS=h5_parameters["NPERIODS"],
+            KV=h5_parameters["KV"],
+            KH=h5_parameters["KH"],
+            KPHASE=h5_parameters["KPHASE"],
+            DISTANCE=h5_parameters["DISTANCE"],
+            GAPH=h5_parameters["GAPH"],
+            GAPV=h5_parameters["GAPV"],
+            HSLITPOINTS=h5_parameters["HSLITPOINTS"],
+            VSLITPOINTS=h5_parameters["VSLITPOINTS"],
+            METHOD=h5_parameters["METHOD"],
+            harmonic_max=h5_parameters["harmonic_max"],
+            USEEMITTANCES=h5_parameters["USEEMITTANCES"],
+            MASK_FLAG=h5_parameters["MASK_FLAG"],
+            MASK_ROT_H_DEG=h5_parameters["MASK_ROT_H_DEG"],
+            MASK_ROT_V_DEG=h5_parameters["MASK_ROT_V_DEG"],
+            MASK_H_MIN=h5_parameters["MASK_H_MIN"],
+            MASK_H_MAX=h5_parameters["MASK_H_MAX"],
+            MASK_V_MIN=h5_parameters["MASK_V_MIN"],
+            MASK_V_MAX=h5_parameters["MASK_V_MAX"],
+            h5_file="undulator_power_density_from_harmonics.h5",
+            h5_entry_name="XOPPY_POWERDENSITY_FROM_HARMONICS",
+            h5_initialize=True,
+            h5_parameters=h5_parameters,
+            photon_energy_bin=h5_parameters["photon_energy_bin"],
+        )
+
+        # example plot
+        if 0:
+            # Power Density
+            from srxraylib.plot.gol import plot, plot_image
+
+            plot_image(power_density_harmonics.sum(axis=0), horizontal, vertical, xtitle="H [mm]", ytitle="V [mm]",
+                       title="Power density W/mm2")
+
+            # Spectral Power & Cumulated Power
+            plot(spectral_power_energy, spectral_power, xtitle="Photon energy [eV]",
+                 ytitle="Spectral Power [W/eV]", grid=1,
+                 title="Spectral Power (bin: %.3f eV)" % (h5_parameters['photon_energy_bin']))
+            de = spectral_power_energy[1] - spectral_power_energy[0]
+            plot(spectral_power_energy, (spectral_power * de).cumsum(), xtitle="Photon energy [eV]",
+                 ytitle="Cumulated Power [W]", grid=1,
+                 title="Cumulated Power (bin: %.3f eV)" % (h5_parameters['photon_energy_bin']))
+
+            #
+        # end script
+        #
+        received_data = DataExchangeObject("XOPPY", "XOPPY_POWERDENSITY_FROM_HARMONICS")
+        # horizontal, vertical, power_density, code, power_density_harmonics, energy, spectral_power, spectral_power_energy, flux3D
+        # received_data.add_content("xoppy_data", [flux3D / codata.e / 1e3, energy, horizontal, vertical])
+        # received_data.add_content("xoppy_code", code)
+
+        received_data.add_content("xoppy_data", [power_density_harmonics / (codata.e * 1e3), energy, horizontal, vertical])
+        received_data.add_content("xoppy_data_plot", [horizontal, vertical, power_density, code, power_density_harmonics, energy, spectral_power, spectral_power_energy, flux3D])
+
+        # received_data.add_content("xoppy_code",  "XOPPY_POWERDENSITY_FROM_HARMONICS")
+        # received_data.add_content("xoppy_script", "#error")
 
     #
     app = QApplication(sys.argv)
@@ -1266,4 +1624,3 @@ if __name__ == "__main__":
     w.show()
     app.exec()
     w.saveSettings()
-'''

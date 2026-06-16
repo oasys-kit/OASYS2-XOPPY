@@ -450,7 +450,6 @@ class OWMlultilayer(XoppyWidgetDabax):
             myscan = 2
         elif self.THETA_FLAG == 0 and self.ENERGY_FLAG == 0:  # single point
             myscan = 0
-        print(">>>>>>>>>>>>>>>>>>>>>> myscan: ", myscan)
         #
         # script
         #
