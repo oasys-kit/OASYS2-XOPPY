@@ -1,3 +1,64 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "OASYS2-XOPPY"
+version = "1.0.22"
+description = "XOPPY: XOP (X-ray oriented programs) in Python"
+readme = "README.md"
+
+# TODO: confirm the exact GPL variant (the old setup.py just said 'GPLv3',
+# and there is no License:: classifier here to cross-check against).
+license = "GPL-3.0-or-later"
+# license = "GPL-3.0-only"      # <- if the source headers say "version 3" only
+# license-files = ["LICENSE"]   # <- uncomment if a LICENSE file exists in the repo
+
+authors = [
+    { name = "Manuel Sanchez del Rio", email = "srio@esrf.eu" },
+    { name = "Luca Rebuffi", email = "lrebuffi@anl.gov" },
+    { name = "Bioinformatics Laboratory, FRI UL" },
+]
+keywords = [
+    "X-ray optics",
+    "simulator",
+    "oasys2",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: X11 Applications :: Qt",
+    "Environment :: Console",
+    "Environment :: Plugins",
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Science/Research",
+]
+dependencies = [
+    "oasys2>=0.0.54",
+    "xoppylib>=1.0.57",
+]
+
+[project.urls]
+Homepage = "https://github.com/oasys-kit/XOPPY"
+Download = "https://github.com/oasys-kit/XOPPY"
+
+[project.entry-points."oasys2.addons"]
+xoppy = "orangecontrib.xoppy"
+
+[project.entry-points."oasys2.widgets"]
+"XOPPY Sources" = "orangecontrib.xoppy.widgets.source"
+"XOPPY Optics" = "orangecontrib.xoppy.widgets.optics"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.packages.find]
+exclude = ["*.tests", "*.tests.*", "tests.*", "tests"]
+# namespaces = false replicates the old find_packages() behaviour exactly.
+# Under pyproject.toml, setuptools DEFAULTS this to true (= find_namespace_packages),
+# which would sweep in non-package dirs such as .../icons and .../misc.
+namespaces = false
+
+[tool.setuptools.package-data]
+"orangecontrib.xoppy.widgets.source" = ["icons/*.png", "icons/*.jpg"]
+"orangecontrib.xoppy.widgets.optics" = ["icons/*.png", "icons/*.jpg", "misc/*.*"]
