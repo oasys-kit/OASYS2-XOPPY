@@ -24,8 +24,8 @@ class InfoBoxWidget(QWidget, OWComponent):
         super(InfoBoxWidget, self).__init__()
 
         info_box_inner= gui.widgetBox(self, "Info")
-        info_box_inner.setFixedHeight(515*y_scale_factor)
-        info_box_inner.setFixedWidth(230*x_scale_factor)
+        info_box_inner.setFixedHeight(int(515*y_scale_factor))
+        info_box_inner.setFixedWidth(int(230*x_scale_factor))
 
         self.total = gui.lineEdit(info_box_inner, self, "total_field", "Total", tooltip="Total", labelWidth=115, valueType=str, orientation="horizontal")
 
@@ -34,7 +34,7 @@ class InfoBoxWidget(QWidget, OWComponent):
         self.label_h = QLabel("FWHM ")
         self.label_h.setFixedWidth(115)
         palette =  QPalette(self.label_h.palette())
-        palette.setColor(QPalette.Foreground, QColor('blue'))
+        palette.setColor(QPalette.WindowText, QColor('blue'))
         self.label_h.setPalette(palette)
         label_box_1.layout().addWidget(self.label_h)
         self.fwhm_h = gui.lineEdit(label_box_1, self, "fwhm_h_field", "", tooltip="FWHM", labelWidth=115, valueType=str, orientation="horizontal")
@@ -45,7 +45,7 @@ class InfoBoxWidget(QWidget, OWComponent):
             self.label_v = QLabel("FWHM ")
             self.label_v.setFixedWidth(115)
             palette =  QPalette(self.label_h.palette())
-            palette.setColor(QPalette.Foreground, QColor('red'))
+            palette.setColor(QPalette.WindowText, QColor('red'))
             self.label_v.setPalette(palette)
             label_box_2.layout().addWidget(self.label_v)
             self.fwhm_v = gui.lineEdit(label_box_2, self, "fwhm_v_field", "", tooltip="FWHM", labelWidth=115, valueType=str, orientation="horizontal")
@@ -55,7 +55,7 @@ class InfoBoxWidget(QWidget, OWComponent):
         self.label_s_h = QLabel("\u03c3 ")
         self.label_s_h.setFixedWidth(115)
         palette =  QPalette(self.label_s_h.palette())
-        palette.setColor(QPalette.Foreground, QColor('blue'))
+        palette.setColor(QPalette.WindowText, QColor('blue'))
         self.label_s_h.setPalette(palette)
         label_box_1.layout().addWidget(self.label_s_h)
         self.sigma_h = gui.lineEdit(label_box_1, self, "sigma_h_field", "", tooltip="Sigma", labelWidth=115, valueType=str, orientation="horizontal")
@@ -66,7 +66,7 @@ class InfoBoxWidget(QWidget, OWComponent):
             self.label_s_v = QLabel("\u03c3 ")
             self.label_s_v.setFixedWidth(115)
             palette =  QPalette(self.label_s_v.palette())
-            palette.setColor(QPalette.Foreground, QColor('red'))
+            palette.setColor(QPalette.WindowText, QColor('red'))
             self.label_s_v.setPalette(palette)
             label_box_2.layout().addWidget(self.label_s_v)
             self.sigma_v = gui.lineEdit(label_box_2, self, "sigma_v_field", "", tooltip="Sigma", labelWidth=115, valueType=str, orientation="horizontal")
@@ -139,8 +139,8 @@ class ImageViewWithFWHM(QWidget, OWComponent):
         layout.addWidget(self.info_box, 0, 1, 1, 1)
         layout.addWidget(self.plot_canvas, 0, 0, 1, 1)
 
-        layout.setColumnMinimumWidth(0, 600*x_scale_factor)
-        layout.setColumnMinimumWidth(1, 230*x_scale_factor)
+        layout.setColumnMinimumWidth(0, int(600*x_scale_factor))
+        layout.setColumnMinimumWidth(1, int(230*x_scale_factor))
 
         self.setLayout(layout)
 
