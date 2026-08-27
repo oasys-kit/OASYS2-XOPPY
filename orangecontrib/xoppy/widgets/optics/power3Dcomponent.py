@@ -253,7 +253,9 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
 
         gui.comboBox(box1, self, "FILE_DUMP",
                      label=self.unitLabels()[idx],
-                    items=['No', 'Yes (hdf5)','Yes (x,y,absorption)', 'Yes (absorption matrix)'],
+                    items=['No', 'Yes (hdf5)',
+                           'Yes (x,y,absorbed)', 'Yes (absorbed matrix)',
+                           'Yes (x,y,transmitted)', 'Yes (transmitted matrix)'],
                     orientation="horizontal", labelWidth=250)
         self.show_at(self.unitFlags()[idx], box1)
 
@@ -582,7 +584,7 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
                                           title="Invalid file extension")
                 if tmp == False: return
                 self.FILE_NAME = filename_alternative
-        elif (self.FILE_DUMP == 2 or self.FILE_DUMP == 3): # (x,y, absorption) or matrix
+        elif self.FILE_DUMP >= 2: # (x,y,power density) or matrix, absorbed or transmitted
             if (os.path.splitext(self.FILE_NAME))[-1] not in [".txt", ".dat", ".TXT", ".DAT"]:
                 filename_alternative = (os.path.splitext(self.FILE_NAME))[0] + ".txt"
                 tmp = ConfirmDialog.confirmed(self,
@@ -780,10 +782,16 @@ class OWpower3Dcomponent(XoppyWidgetDabax, WidgetDecorator):
                           EL1_FLAG=self.EL1_FLAG, EL1_HMAG=hmag, EL1_VMAG=vmag)
         elif self.FILE_DUMP == 2:
             write_txt_file(calculated_data, self.input_beam.get_content("xoppy_data"),
-                           filename=self.FILE_NAME, method="3columns")
+                           filename=self.FILE_NAME, method="3columns", quantity="absorbed")
         elif self.FILE_DUMP == 3:
             write_txt_file(calculated_data, self.input_beam.get_content("xoppy_data"),
-                           filename=self.FILE_NAME, method="matrix")
+                           filename=self.FILE_NAME, method="matrix", quantity="absorbed")
+        elif self.FILE_DUMP == 4:
+            write_txt_file(calculated_data, self.input_beam.get_content("xoppy_data"),
+                           filename=self.FILE_NAME, method="3columns", quantity="transmitted")
+        elif self.FILE_DUMP == 5:
+            write_txt_file(calculated_data, self.input_beam.get_content("xoppy_data"),
+                           filename=self.FILE_NAME, method="matrix", quantity="transmitted")
 
 
         return transmittance, absorbance, E, H, V, script
