@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "OASYS2-XOPPY"
-version = "1.0.23"
+version = "1.0.24"
 description = "XOPPY: XOP (X-ray oriented programs) in Python"
 readme = "README.md"
 
@@ -34,7 +34,7 @@ classifiers = [
 ]
 dependencies = [
     "oasys2>=0.0.60",
-    "xoppylib>=1.0.59",
+    "xoppylib>=1.0.60",
 ]
 
 [project.urls]
